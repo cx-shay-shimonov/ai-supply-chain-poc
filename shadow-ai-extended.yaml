@@ -1,0 +1,80 @@
+rules:
+  - id: detect-anthropic
+    patterns:
+      - pattern-regex: '(@anthropic-ai/sdk|anthropic|claude)'
+    message: "Anthropic/Claude SDK detected"
+    languages: [javascript, typescript, python]
+    severity: WARNING
+    
+  - id: detect-google-ai
+    patterns:
+      - pattern-regex: '(@google/generative-ai|google\.generativeai|gemini)'
+    message: "Google Generative AI SDK detected"
+    languages: [javascript, typescript, python]
+    severity: WARNING
+    
+  - id: detect-cohere
+    patterns:
+      - pattern-regex: '(cohere-ai|cohere)'
+    message: "Cohere AI SDK detected"
+    languages: [javascript, typescript, python]
+    severity: WARNING
+    
+  - id: detect-mistral
+    patterns:
+      - pattern-regex: '(@mistralai/mistralai|mistralai)'
+    message: "Mistral AI SDK detected"
+    languages: [javascript, typescript, python]
+    severity: WARNING
+    
+  - id: detect-huggingface
+    patterns:
+      - pattern-regex: '(transformers|huggingface)'
+    message: "Hugging Face transformers detected"
+    languages: [python]
+    severity: INFO
+    
+  - id: detect-langchain
+    patterns:
+      - pattern-regex: '(langchain|langchain-openai|langchain-anthropic)'
+    message: "LangChain framework detected"
+    languages: [javascript, typescript, python]
+    severity: INFO
+    
+  - id: detect-ai-model-names
+    patterns:
+      - pattern-regex: '(gpt-4|gpt-3\.5|claude-|gemini-|llama|mistral|cohere)'
+    message: "AI model name reference detected"
+    languages: [javascript, typescript, python, json, yaml]
+    severity: INFO
+    
+  - id: detect-api-keys
+    patterns:
+      - pattern-regex: '(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|COHERE_API_KEY)'
+    message: "AI service API key reference detected"
+    languages: [javascript, typescript, python, bash, shell]
+    severity: WARNING
+    
+  - id: detect-hardcoded-api-keys
+    patterns:
+      - pattern-regex: '(sk-[a-zA-Z0-9]{48})'
+    message: "Potential hardcoded API key detected"
+    languages: [javascript, typescript, python, bash]
+    severity: ERROR
+    metadata:
+      category: secrets
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+    
+  - id: detect-chat-completion
+    patterns:
+      - pattern-regex: '(chat\.completions|createChatCompletion|ChatCompletion)'
+    message: "Chat completion API usage detected"
+    languages: [javascript, typescript, python]
+    severity: INFO
+    
+  - id: detect-embeddings
+    patterns:
+      - pattern-regex: '(embeddings?\.create|createEmbedding|text-embedding)'
+    message: "Embeddings API usage detected"
+    languages: [javascript, typescript, python]
+    severity: INFO

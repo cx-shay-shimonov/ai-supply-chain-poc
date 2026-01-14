@@ -1,0 +1,31 @@
+rules:
+  - id: detect-openai-import
+    patterns:
+      - pattern-either:
+          - pattern: |
+              import OpenAI from "openai"
+          - pattern: |
+              import { OpenAI } from "openai"
+          - pattern: |
+              const OpenAI = require('openai')
+          - pattern: |
+              from openai import OpenAI
+          - pattern: |
+              import openai
+    message: "OpenAI SDK import detected"
+    languages: [javascript, typescript, python]
+    severity: WARNING
+    
+  - id: detect-openai-model
+    patterns:
+      - pattern-regex: '(gpt-4|gpt-3\.5|text-davinci|text-embedding)'
+    message: "OpenAI model reference detected"
+    languages: [javascript, typescript, python, json, yaml]
+    severity: INFO
+    
+  - id: detect-openai-api-key
+    patterns:
+      - pattern-regex: 'OPENAI_API_KEY|openai.*api.*key'
+    message: "OpenAI API key reference detected"
+    languages: [javascript, typescript, python]
+    severity: WARNING

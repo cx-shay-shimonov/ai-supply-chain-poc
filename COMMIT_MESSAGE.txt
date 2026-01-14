@@ -1,0 +1,57 @@
+Initial commit: AI Supply Chain POC - Semantic Search & Static Analysis Tools
+
+This POC demonstrates tools for detecting AI API and model usage in codebases using:
+- Semantic search (sem) for natural language code queries
+- Static analysis (semgrep) for pattern-based detection
+
+## Features
+
+### Core Scripts
+- ai-usage-audit.sh: Main audit script combining semantic + semgrep analysis
+- sem-audit.sh: Semantic-only audit (faster for AI model detection)
+- sem-query.py: Non-interactive wrapper for automation and JSON output
+- ai_asset_extractor.py: DRY module for extracting AI models/providers
+- test.sh: Quick test script for semantic search validation
+
+### Configuration
+- my-detect-openai.yaml: Custom Semgrep rules for OpenAI/AI API detection
+- shadow-ai-extended.yaml: Extended Semgrep ruleset for comprehensive AI detection
+- .gitignore: Excludes venv/, output/, sample projects, and sensitive files
+
+### Documentation
+- README.md: Setup instructions and quick start guide
+- SEM-EXAMPLES.md: Comprehensive semantic search examples (1,630 lines)
+- SEMGREP-EXAMPLES.md: Static analysis examples and output formats (689 lines)
+- FILE-STRUCTURE.md: Complete directory structure and file descriptions
+- projects-samples/README.md: Sample project setup instructions
+
+### Demo & Setup
+- setup-and-demo.sh: Interactive setup with guided demos
+- commands-examples.sh: 10+ working command examples
+- test-samples.sh: Validation script for setup verification
+
+## Key Updates
+- Fixed all documentation references: sample-react-app → cnas-mfe, sample-ai-app → ai-ui
+- Updated .gitignore to exclude venv/, output/, .env files
+- Verified no secrets or API keys are being committed
+- All examples now reference actual project names (ai-ui, cnas-mfe, OpenHands)
+
+## Project Structure
+- 17 files added (5,138+ lines of code and documentation)
+- Python scripts for automation and asset extraction
+- Shell scripts for auditing and testing
+- YAML configurations for Semgrep rules
+- Comprehensive markdown documentation
+
+## Sample Projects (Clone Separately)
+- ai-ui: Node.js app with OpenAI integration
+- cnas-mfe: React/TypeScript micro-frontend
+- OpenHands: Large AI development platform (2,145 files)
+
+## Security
+✅ No API keys or secrets committed
+✅ .env files excluded via .gitignore
+✅ venv/ directory excluded
+✅ Output directories excluded
+
+Ready for code review and push to cx-shay-shimonov repository.
