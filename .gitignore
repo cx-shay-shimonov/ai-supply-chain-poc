@@ -10,9 +10,10 @@ __pycache__/
 output/
 test-output/
 
-# Sample projects (cloned separately - only README.md is tracked)
-projects-samples/*
-!projects-samples/README.md
+# Sample projects (cloned separately)
+projects-samples/ai-ui/
+projects-samples/OpenHands/
+projects-samples/cnas-mfe/
 
 # OS files
 .DS_Store
