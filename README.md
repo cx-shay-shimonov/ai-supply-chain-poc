@@ -1,4 +1,5 @@
 # AI API Usage Detection: Open Source Tools Evaluation
+Ticket: [AST-127784 AI Supply Chain | AI Libraries Discovery | Research | Alternative Libraries for AI usage detection](https://checkmarx.atlassian.net/browse/AST-127784)
 
 ## TL;DR
 
@@ -7,7 +8,7 @@
 Other tools evaluated:
 - **Semgrep**: Good results for import aliases and variable tracking, but competitor library with licensing concerns
 - **xbom**: Limited results, missed JavaScript AI usage entirely
-- **semantic-code-search (sem)**: Many false negatives despite high certainty scores
+- **semantic-code-search (sem)**: Poor results and many false negatives despite high certainty scores
 
 ---
 
@@ -26,7 +27,6 @@ The purpose of this evaluation is to explore and experiment with tools that can 
 - **Improved Accuracy**: Evaluate approaches that reduce false positives and false negatives, including machine learning-based semantic search that understands code intent rather than just pattern matching
 - **Alternative Approaches**: Discover alternative detection methodologies, such as combining static analysis (pattern-based rules) with semantic search (natural language queries), to create a more comprehensive view of AI usage
 
-Ticket: [AI Supply Chain | AI Libraries Discovery | Research | Alternative Libraries for AI usage detection](https://checkmarx.atlassian.net/browse/AST-127784)
 
 
 ## Detection Challenges
@@ -87,6 +87,9 @@ client, err := gen.NewClient(ctx, option.WithAPIKey(os.Getenv("API_KEY")))
 ```
 
 **Challenge**: Tools looking for `genai.NewClient` patterns may miss `gen.NewClient` when the import uses an alias.
+
+### 4. Comment out code
+### 5. Function calls
 
 ---
 
@@ -236,7 +239,7 @@ On the first search of a codebase:
 #### Activate the Virtual Environment
 
 ```bash
-source /Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc/sem/venv/bin/activate
+source /ai-supply-chain-poc/sem/venv/bin/activate
 ```
 
 **Note:** You must be inside a git repository.
