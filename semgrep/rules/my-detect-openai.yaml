@@ -9,8 +9,6 @@ rules:
           - pattern: |
               const OpenAI = require('openai')
           - pattern: |
-              from openai import OpenAI
-          - pattern: |
               import openai
     message: "OpenAI SDK import detected"
     languages: [javascript, typescript, python]

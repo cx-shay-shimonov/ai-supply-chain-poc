@@ -11,18 +11,19 @@
 #   ./ai-usage-audit.sh projects-samples/OpenHands 500
 #   ./ai-usage-audit.sh projects-samples/ai-ui 1000
 
-BASEDIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$BASEDIR"
+BASEDIR="$(cd "$(dirname "$0")/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # Default target or use first argument
-TARGET="${1:-projects-samples/ai-ui}"
+TARGET="${1:-$BASEDIR/projects-samples/ai-ui}"
 
 # Extract project name from target path
 PROJECT_NAME=$(basename "$TARGET")
 
 # Create timestamped output directory with project name
 TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-OUTPUT_DIR="$BASEDIR/output/sem-audit-${PROJECT_NAME}-${TIMESTAMP}"
+OUTPUT_DIR="$SCRIPT_DIR/../output/sem-audit-${PROJECT_NAME}-${TIMESTAMP}"
 mkdir -p "$OUTPUT_DIR"
 
 # Default limit or use second argument
@@ -56,7 +57,7 @@ EMBEDDINGS_PATH="$TARGET/.embeddings"
 if [ ! -f "$EMBEDDINGS_PATH" ]; then
     echo "⚠️  No embeddings found. Generating..."
     echo ""
-    venv/bin/sem --embed -p "$TARGET"
+    "$SCRIPT_DIR/../venv/bin/sem" --embed -p "$TARGET"
     echo ""
     
     if [ -f "$EMBEDDINGS_PATH" ]; then
@@ -91,7 +92,7 @@ else
     # Use multiple focused queries for better results
     # Query 1: General AI API usage (catches OpenAI, Anthropic, etc.)
     echo "  🔍 Query 1: AI API keys and configuration..."
-    venv/bin/python sem-query.py -p "$TARGET" --json -n "$((LIMIT/3))" \
+    "$SCRIPT_DIR/../venv/bin/python" "$SCRIPT_DIR/../sem-query.py" -p "$TARGET" --json -n "$((LIMIT/3))" \
         'usages of gpt-5, gpt-5-latest, gpt-5-2025-11-04, gpt-5-pro, gpt-5-mini, gpt-5-nano, o4-mini, o3-high, gpt-4.1-mini, gpt-4o, gpt-oss-120b, claude-opus-4-5-latest, claude-opus-4-5-20251101, claude-sonnet-4-5-latest, claude-sonnet-4-5-20250929, claude-haiku-4-5, claude-3-5-haiku-latest, claude-code-2-1, gemini-3-pro, gemini-3-flash, gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-live-2.5-flash-native-audio, deepseek-v4, deepseek-v3.2, deepseek-reasoner, deepseek-chat, llama-3.3-70b-instruct, llama-3.1-405b-instruct, llama-4-preview-70b, mistral-large-2511, mistral-nemo-latest, pixtral-large-latest, codestral-latest, grok-4-fast-reasoning, grok-code-fast-1, glm-4.7-thinking, qwen3-72b-instruct, mimo-v2-flash' \
         2>/dev/null > "$OUTPUT_DIR/sem_results_q1.json"
     
@@ -188,7 +189,7 @@ TOTAL_FINDINGS=$((SEM_COUNT + SEMGREP_COUNT))
 # Scan for variable-based model concatenations
 echo ""
 echo "🔍 Scanning for concatenated model variables..."
-venv/bin/python scan-model-variables.py "$TARGET" > "$OUTPUT_DIR/variable_models.json"
+"$SCRIPT_DIR/../venv/bin/python" "$BASEDIR/shared/scan-model-variables.py" "$TARGET" > "$OUTPUT_DIR/variable_models.json"
 VARIABLE_MODEL_COUNT=$(jq '.count' "$OUTPUT_DIR/variable_models.json" 2>/dev/null || echo "0")
 
 # Show comparison
@@ -312,7 +313,7 @@ echo ""
 # Extract assets from Semantic Search results
 if [ "$SKIP_SEM" = false ] && [ "$SEM_COUNT" -gt 0 ]; then
     echo "🔍 Processing Semantic Search results..."
-    python3 "$BASEDIR/ai_asset_extractor.py" semantic "$OUTPUT_DIR/sem_results.json" > "$SEM_ASSETS_FILE"
+    python3 "$BASEDIR/shared/ai_asset_extractor.py" semantic "$OUTPUT_DIR/sem_results.json" > "$SEM_ASSETS_FILE"
     echo "   ✅ Semantic assets extracted"
 fi
 

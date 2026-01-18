@@ -2,8 +2,9 @@
 # Extract distinct AI models and providers from audit results
 # Creates separate JSON files for semantic search and static analysis findings
 
-BASEDIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$BASEDIR"
+BASEDIR="$(cd "$(dirname "$0")/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # Input files
 SEM_RESULTS="${1:-/tmp/sem_results.json}"

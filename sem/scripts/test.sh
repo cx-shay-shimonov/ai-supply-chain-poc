@@ -1,9 +1,11 @@
 #!/bin/bash
-cd /Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc
+BASEDIR="$(cd "$(dirname "$0")/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # Create test output directory
 TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-TEST_OUTPUT="output/sem-test/$TIMESTAMP"
+TEST_OUTPUT="$SCRIPT_DIR/../output/sem-test/$TIMESTAMP"
 mkdir -p "$TEST_OUTPUT"
 
 echo "╔════════════════════════════════════════════════════════════════╗"
@@ -16,15 +18,15 @@ echo "📂 Output: $TEST_OUTPUT/"
 echo ""
 
 # Check if embeddings exist
-if [ ! -f "projects-samples/ai-ui/.embeddings" ]; then
+if [ ! -f "$BASEDIR/projects-samples/ai-ui/.embeddings" ]; then
     echo "⚠️  No embeddings found. Generating..."
-    venv/bin/sem --embed -p projects-samples/ai-ui
+    "$SCRIPT_DIR/../venv/bin/sem" --embed -p "$BASEDIR/projects-samples/ai-ui"
     echo ""
 fi
 
 # Run semantic search and save to JSON
 echo "Running semantic search..."
-venv/bin/python sem-query.py -p projects-samples/ai-ui --json -n 10 'OpenAI gpt usage' > "$TEST_OUTPUT/search_results.json" 2>/dev/null
+"$SCRIPT_DIR/../venv/bin/python" "$SCRIPT_DIR/../sem-query.py" -p "$BASEDIR/projects-samples/ai-ui" --json -n 10 'OpenAI gpt usage' > "$TEST_OUTPUT/search_results.json" 2>/dev/null
 
 # Check if successful
 if [ $? -eq 0 ] && [ -s "$TEST_OUTPUT/search_results.json" ]; then
@@ -43,7 +45,7 @@ if [ $? -eq 0 ] && [ -s "$TEST_OUTPUT/search_results.json" ]; then
     # Create a text summary
     echo ""
     echo "Creating text summary..."
-    venv/bin/python sem-query.py -p projects-samples/ai-ui -n 10 'OpenAI gpt usage' > "$TEST_OUTPUT/search_results.txt" 2>/dev/null
+    "$SCRIPT_DIR/../venv/bin/python" "$SCRIPT_DIR/../sem-query.py" -p "$BASEDIR/projects-samples/ai-ui" -n 10 'OpenAI gpt usage' > "$TEST_OUTPUT/search_results.txt" 2>/dev/null
     
     echo "✅ Summary created!"
     echo ""

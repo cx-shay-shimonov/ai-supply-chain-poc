@@ -1,70 +1,162 @@
-# Semantic Code Search POC - File Structure
+# AI Supply Chain POC - File Structure
 
 ## Overview
-This repository demonstrates tools for detecting AI API and model usage in codebases using semantic search (`sem`) and static analysis (`semgrep`).
+This repository demonstrates tools for detecting AI API and model usage in codebases using semantic search (`sem`) and static analysis (`semgrep`). The project is organized by tool for better maintainability.
 
 ---
 
-## 📁 Root Files
+## 📁 Root Structure
 
-### Core Scripts
-
-| File | Type | Description |
-|------|------|-------------|
-| `ai-usage-audit.sh` | Script | **Main audit script** - Runs both semantic search and semgrep, generates timestamped output folder with CSV comparison, JSON results, and AI asset extraction |
-| `sem-audit.sh` | Script | **Semantic-only audit** - Runs semantic search without semgrep, faster for AI model detection |
-| `test.sh` | Script | **Quick test script** - Fast semantic search test on ai-ui project with output files |
-| `sem-query.py` | Python | **Non-interactive wrapper for sem** - Enables automation, JSON output, token highlighting, and match reasoning for semantic search |
-| `ai_asset_extractor.py` | Python | **AI asset extraction module** - DRY module for extracting AI models and providers from search results (OpenAI, Anthropic, Google, Meta, Cohere, Mistral) |
-
-### Configuration Files
-
-| File | Type | Description |
-|------|------|-------------|
-| `my-detect-openai.yaml` | YAML | **Custom Semgrep rules** - Pattern-based rules for detecting OpenAI and AI API usage |
-| `shadow-ai-extended.yaml` | YAML | **Extended Semgrep ruleset** - Additional comprehensive AI detection patterns |
-| `.gitignore` | Config | **Git exclusions** - Excludes venv/, output/, projects-samples/*, __pycache__/ |
-
-### Documentation
-
-| File | Type | Description |
-|------|------|-------------|
-| `README.md` | Docs | **Main documentation** - Setup instructions, overview, tool descriptions, and quick start guide |
-| `SEM-EXAMPLES.md` | Docs | **Semantic search examples** - Comprehensive guide to sem tool with real-world queries on OpenHands project |
-| `SEMGREP-EXAMPLES.md` | Docs | **Static analysis examples** - Semgrep usage, detection strategies, and output formats |
-| `FILE-STRUCTURE.md` | Docs | **This file** - Complete directory and file listing with descriptions |
-
-### Setup & Demo Scripts
-
-| File | Type | Description |
-|------|------|-------------|
-| `setup-and-demo.sh` | Script | **Interactive setup** - Guided setup for dependencies, embeddings, and demo runs |
-| `commands-examples.sh` | Script | **Quick command examples** - 10+ working examples for sem and semgrep |
-| `test-samples.sh` | Script | **Validation script** - Quick testing of setup with file counts and embedding status |
-
-### Legacy/Deprecated
-
-| File | Type | Description |
-|------|------|-------------|
-| `extract-ai-assets.sh` | Script | **Deprecated** - Standalone asset extraction (now integrated into ai-usage-audit.sh) |
+```
+ai-supply-chain-poc/
+├── sem/                        # Semantic search tool
+│   ├── venv/                  # Python virtual environment
+│   ├── scripts/               # Sem-specific scripts
+│   ├── docs/                  # Sem documentation
+│   ├── output/                # Sem tool outputs
+│   └── sem-query.py           # Non-interactive wrapper
+├── semgrep/                    # Static analysis tool
+│   ├── rules/                 # YAML detection rules
+│   ├── scripts/               # Semgrep-specific scripts
+│   ├── docs/                  # Semgrep documentation
+│   └── output/                # Semgrep outputs
+├── xbom/                       # XBOM reports
+│   └── reports/               # HTML reports
+├── shared/                     # Shared Python utilities
+│   ├── ai_asset_extractor.py
+│   └── scan-model-variables.py
+├── tools/                      # Combined tool scripts
+│   ├── ai-usage-audit.sh
+│   ├── test-samples.sh
+│   ├── setup-and-demo.sh
+│   └── output/                # Combined tool outputs
+├── projects-samples/           # Sample projects for testing
+│   ├── ai-ui/
+│   ├── cnas-mfe/
+│   ├── OpenHands/
+│   └── README.md
+├── README.md                   # Main documentation
+├── FILE-STRUCTURE.md           # This file
+├── READY_FOR_PUSH.md
+├── COMMIT_MESSAGE.txt
+└── .gitignore
+```
 
 ---
 
-## 📂 Directories
+## 📂 SEM Tool (`sem/`)
 
-### `projects-samples/`
-**Sample projects for testing and demos**
+**Semantic code search using machine learning embeddings**
 
-Contains real-world codebases for demonstrating semantic search and static analysis. Projects are cloned separately (excluded from git).
+### Scripts (`sem/scripts/`)
 
-**Structure:**
-```
-projects-samples/
-├── README.md              # Setup instructions and project descriptions
-├── ai-ui/                 # Node.js app with OpenAI integration (clone separately)
-├── cnas-mfe/              # React/TypeScript micro-frontend (clone separately)
-└── OpenHands/             # Large AI development platform (clone separately)
-```
+| File | Description |
+|------|-------------|
+| `sem-audit.sh` | **Semantic-only audit** - Runs semantic search, extracts AI assets |
+| `search-ai-comprehensive.sh` | **Multi-query search** - 6 focused queries for comprehensive AI detection |
+| `search-ai-models.sh` | **Model search** - Searches for specific AI model names |
+| `test.sh` | **Quick test** - Fast semantic search test on ai-ui project |
+| `commands-examples.sh` | **Usage examples** - Working examples for sem and semgrep |
+| `raw-sem-query.sh` | **Raw query** - Direct sem query for model names |
+
+### Python Files
+
+| File | Description |
+|------|-------------|
+| `sem-query.py` | **Non-interactive wrapper** - Enables automation, JSON output, token highlighting |
+
+### Documentation (`sem/docs/`)
+
+| File | Description |
+|------|-------------|
+| `SEM-EXAMPLES.md` | Comprehensive guide with real-world queries |
+| `SEM-QUERY-ENHANCEMENTS.md` | Details on enhanced JSON output features |
+| `IMPROVED-QUERY-GUIDE.md` | Multi-query strategy guide |
+
+### Virtual Environment (`sem/venv/`)
+
+**Key packages:**
+- `semantic-code-search` - Semantic search tool
+- `sentence-transformers` - ML models for code embeddings
+- `torch` - ML framework
+- `tree-sitter` - Code parsing
+
+**Modified file:** `venv/lib/python3.11/site-packages/semantic_code_search/embed.py` - Added arrow_function support
+
+---
+
+## 📂 Semgrep Tool (`semgrep/`)
+
+**Static analysis for pattern-based detection**
+
+### Rules (`semgrep/rules/`)
+
+| File | Description |
+|------|-------------|
+| `my-detect-openai.yaml` | Custom rules for OpenAI and AI API detection |
+| `shadow-ai-extended.yaml` | Extended ruleset for comprehensive AI detection |
+
+### Scripts (`semgrep/scripts/`)
+
+| File | Description |
+|------|-------------|
+| `extract-ai-assets.sh` | Standalone asset extraction from semgrep results |
+
+### Documentation (`semgrep/docs/`)
+
+| File | Description |
+|------|-------------|
+| `SEMGREP-EXAMPLES.md` | Usage guide, detection strategies, output formats |
+
+---
+
+## 📂 XBOM (`xbom/`)
+
+**eXtended Bill of Materials reports**
+
+### Reports (`xbom/reports/`)
+
+| File | Description |
+|------|-------------|
+| `xbom-report.html` | General XBOM report |
+| `ai-ui-xbom-report.html` | AI UI project XBOM report |
+
+---
+
+## 📂 Shared Utilities (`shared/`)
+
+**Python modules used by multiple tools**
+
+| File | Description |
+|------|-------------|
+| `ai_asset_extractor.py` | Extracts AI models and providers from search results (OpenAI, Anthropic, Google, Meta, Cohere, Mistral) |
+| `scan-model-variables.py` | Detects AI models constructed by concatenating string parts |
+
+---
+
+## 📂 Combined Tools (`tools/`)
+
+**Scripts that use both sem and semgrep**
+
+| File | Description |
+|------|-------------|
+| `ai-usage-audit.sh` | **Main audit script** - Runs both semantic search and semgrep, generates CSV comparison |
+| `test-samples.sh` | **Validation script** - Tests setup with file counts and embedding status |
+| `setup-and-demo.sh` | **Interactive setup** - Guided setup for dependencies and demos |
+
+---
+
+## 📂 Sample Projects (`projects-samples/`)
+
+**Real-world codebases for testing**
+
+Contains projects cloned separately (excluded from git):
+
+| Project | Description |
+|---------|-------------|
+| `ai-ui/` | Node.js app with OpenAI integration |
+| `cnas-mfe/` | React/TypeScript micro-frontend |
+| `OpenHands/` | Large AI development platform (2,145 files) |
 
 **Clone Commands:**
 ```bash
@@ -75,84 +167,35 @@ git clone https://github.com/All-Hands-AI/OpenHands.git
 
 ---
 
-### `output/`
-**Timestamped audit results**
-
-Each audit run creates a new timestamped folder with all results. Files are organized by run.
-
-**Structure:**
-```
-output/
-└── YYYYMMDD_HHMMSS/       # One folder per audit run
-    ├── ai_audit_comparison.csv           # CSV comparison of findings
-    ├── sem_results.json                   # Raw semantic search output
-    ├── semgrep_results.json               # Raw semgrep output
-    ├── semantic_ai_providers.json         # Complete semantic results with summary
-    ├── semantic_assets.json               # Assets only (models/providers)
-    ├── semgrep_ai_providers.json          # Complete semgrep results with summary
-    └── semgrep_assets.json                # Assets only (models/providers)
-```
-
-**Generated by:** `ai-usage-audit.sh`, `sem-audit.sh`
-
----
-
-**Test script results**
-
-Quick test runs from `test.sh`. Each run creates a timestamped folder.
-
-**Structure:**
-```
-test-output/
-└── YYYYMMDD_HHMMSS/       # One folder per test run
-    ├── search_results.json    # Semantic search results (JSON)
-    └── search_results.txt     # Semantic search results (text)
-```
-
-**Generated by:** `test.sh`
-
----
-
-### `venv/`
-**Python virtual environment**
-
-Contains all Python dependencies for sem, semgrep, and helper scripts.
-
-**Key packages:**
-- `semantic-code-search` - Semantic search tool
-- `sentence-transformers` - ML models for code embeddings
-- `semgrep` - Static analysis tool
-- `torch` - ML framework
-- `tree-sitter` - Code parsing
-
-**Created by:** `python3 -m venv venv && venv/bin/pip install ...`
-
----
-
-### `.git/`
-**Git repository**
-
-Version control for the project. Tracks all code, scripts, and documentation.
-
----
-
 ## 🎯 Key Workflows
 
-### Full Audit
+### Full Combined Audit
 ```bash
-bash ai-usage-audit.sh projects-samples/OpenHands 500
-# → Creates output/YYYYMMDD_HHMMSS/ with 7 files
+bash tools/ai-usage-audit.sh projects-samples/OpenHands 500
+# → Creates tools/output/YYYYMMDD_HHMMSS/ with results
+```
+
+### Semantic-Only Audit
+```bash
+bash sem/scripts/sem-audit.sh projects-samples/ai-ui 100
+# → Creates sem/output/sem-audit-ai-ui-YYYYMMDD_HHMMSS/
+```
+
+### Comprehensive Search
+```bash
+bash sem/scripts/search-ai-comprehensive.sh projects-samples/OpenHands 200
+# → Creates sem/output/ai-comprehensive-OpenHands-YYYYMMDD_HHMMSS/
 ```
 
 ### Quick Test
 ```bash
-bash test.sh
-# → Creates test-output/YYYYMMDD_HHMMSS/ with 2 files
+bash sem/scripts/test.sh
+# → Creates sem/output/sem-test/YYYYMMDD_HHMMSS/
 ```
 
 ### Direct Semantic Search
 ```bash
-venv/bin/python sem-query.py -p projects-samples/ai-ui -n 10 'OpenAI usage'
+python sem/sem-query.py -p projects-samples/ai-ui -n 10 'OpenAI usage'
 # → Prints results to terminal
 ```
 
@@ -161,60 +204,45 @@ venv/bin/python sem-query.py -p projects-samples/ai-ui -n 10 'OpenAI usage'
 ## 📝 File Relationships
 
 ```
-Main Scripts:
-  ai-usage-audit.sh
-    ├── Uses: sem-query.py
-    ├── Uses: ai_asset_extractor.py
-    ├── Uses: semgrep (with my-detect-openai.yaml)
-    └── Creates: output/YYYYMMDD_HHMMSS/*
+Combined Tools:
+  tools/ai-usage-audit.sh
+    ├── Uses: sem/venv/bin/python + sem/sem-query.py
+    ├── Uses: shared/ai_asset_extractor.py
+    ├── Uses: shared/scan-model-variables.py
+    ├── Uses: semgrep + semgrep/rules/*.yaml
+    └── Creates: tools/output/YYYYMMDD_HHMMSS/*
 
-  sem-audit.sh
-    ├── Uses: sem-query.py
-    ├── Uses: ai_asset_extractor.py
-    └── Creates: output/YYYYMMDD_HHMMSS/*
+  tools/setup-and-demo.sh
+    ├── Uses: sem/venv/bin/sem
+    └── Guides: Setup and demo workflows
 
-  test.sh
-    ├── Uses: sem-query.py
-    └── Creates: output/YYYYMMDD_HHMMSS/*
+Sem Tool:
+  sem/scripts/sem-audit.sh
+    ├── Uses: sem/venv/bin/python + sem/sem-query.py
+    ├── Uses: shared/ai_asset_extractor.py
+    ├── Uses: shared/scan-model-variables.py
+    └── Creates: sem/output/sem-audit-PROJECT-YYYYMMDD_HHMMSS/*
 
-Supporting:
-  sem-query.py
-    ├── Uses: venv/lib/.../semantic_code_search
+  sem/scripts/search-ai-comprehensive.sh
+    ├── Uses: sem/venv/bin/python + sem/sem-query.py
+    ├── Uses: shared/ai_asset_extractor.py
+    ├── Uses: shared/scan-model-variables.py
+    └── Creates: sem/output/ai-comprehensive-PROJECT-YYYYMMDD_HHMMSS/*
+
+  sem/sem-query.py
+    ├── Uses: sem/venv/lib/.../semantic_code_search
     ├── Reads: projects-samples/*/.embeddings
-    └── Enhanced with: arrow_function support patch
+    └── Enhanced with: certainty, match_reason, highlighted_tokens
 
-  ai_asset_extractor.py
-    ├── Called by: ai-usage-audit.sh, sem-audit.sh
+Shared Utilities:
+  shared/ai_asset_extractor.py
+    ├── Called by: All audit scripts
     └── Extracts: AI models and providers from JSON results
+
+  shared/scan-model-variables.py
+    ├── Called by: Audit scripts
+    └── Detects: Concatenated model names in source code
 ```
-
----
-
-## 🔧 Modified Files
-
-### `venv/lib/python3.11/site-packages/semantic_code_search/embed.py`
-**Patched to add arrow function support**
-
-Added `'arrow_function'` to `nodes_to_extract` list to detect Express.js route handlers and arrow functions in JavaScript/TypeScript.
-
-```python
-# Line 80-81 (patched)
-nodes_to_extract = ['function_definition', 'method_definition', 'arrow_function',
-                    'function_declaration', 'method_declaration']
-```
-
----
-
-## 📊 File Sizes (Approximate)
-
-| Category | Files | Size Range |
-|----------|-------|------------|
-| Scripts | 8 | 1-20 KB each |
-| Python modules | 2 | 5-15 KB each |
-| Documentation | 4 | 10-100 KB each |
-| Config | 2 | 1-5 KB each |
-| Output (per run) | 7 | 5 KB - 100 MB |
-| venv/ | ~300 MB | Dependencies |
 
 ---
 
@@ -222,8 +250,9 @@ nodes_to_extract = ['function_definition', 'method_definition', 'arrow_function'
 
 1. **Setup environment:**
    ```bash
-   python3 -m venv venv
-   venv/bin/pip install semantic-code-search semgrep
+   cd /path/to/ai-supply-chain-poc
+   python3 -m venv sem/venv
+   sem/venv/bin/pip install semantic-code-search semgrep
    ```
 
 2. **Clone sample projects:**
@@ -235,12 +264,12 @@ nodes_to_extract = ['function_definition', 'method_definition', 'arrow_function'
 
 3. **Run a test:**
    ```bash
-   bash test.sh
+   bash sem/scripts/test.sh
    ```
 
 4. **Run full audit:**
    ```bash
-   bash ai-usage-audit.sh projects-samples/ai-ui 50
+   bash tools/ai-usage-audit.sh projects-samples/ai-ui 50
    ```
 
 ---
@@ -248,6 +277,6 @@ nodes_to_extract = ['function_definition', 'method_definition', 'arrow_function'
 ## 📚 More Information
 
 - See `README.md` for detailed setup and usage
-- See `SEM-EXAMPLES.md` for semantic search examples
-- See `SEMGREP-EXAMPLES.md` for static analysis examples
+- See `sem/docs/SEM-EXAMPLES.md` for semantic search examples
+- See `semgrep/docs/SEMGREP-EXAMPLES.md` for static analysis examples
 - See `projects-samples/README.md` for sample project details

@@ -1,8 +1,9 @@
 #!/bin/sh
 # Command examples using sample projects in projects-samples/
-# Run from the ai-supply-chain-poc directory
+# Run from the sem/scripts directory
 
-BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+BASEDIR="$(cd "$(dirname "$0")/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 AI_UI="$BASEDIR/projects-samples/ai-ui"
 CNAS_MFE="$BASEDIR/projects-samples/cnas-mfe"
 OPENHANDS="$BASEDIR/projects-samples/OpenHands"
@@ -11,38 +12,38 @@ echo "=== Semantic Code Search (sem) Examples ==="
 echo ""
 
 echo "1. Find usages of SortedSeverities function (CNAS MFE)"
-venv/bin/sem -p projects-samples/cnas-mfe -n 100 'usages of SortedSeverities function'
+"$SCRIPT_DIR/../venv/bin/sem" -p "$CNAS_MFE" -n 100 'usages of SortedSeverities function'
 
 echo ""
 echo "2. Find OpenAI/AI usage (ai-ui)"
-venv/bin/sem -p projects-samples/ai-ui -n 100 'OpenAI and gpt-4o-mini'
+"$SCRIPT_DIR/../venv/bin/sem" -p "$AI_UI" -n 100 'OpenAI and gpt-4o-mini'
 
 echo ""
 echo "3. Find React functional components (CNAS MFE)"
-venv/bin/sem -p projects-samples/cnas-mfe -n 50 'React functional components'
+"$SCRIPT_DIR/../venv/bin/sem" -p "$CNAS_MFE" -n 50 'React functional components'
 
 echo ""
 echo "4. Find array methods (CNAS MFE)"
-venv/bin/sem -p projects-samples/cnas-mfe -n 50 'array methods like reduce and map'
+"$SCRIPT_DIR/../venv/bin/sem" -p "$CNAS_MFE" -n 50 'array methods like reduce and map'
 
 echo ""
 echo "5. Find LLM integration (OpenHands - large project)"
-venv/bin/sem -p projects-samples/OpenHands -n 50 'LLM integration and API calls'
+"$SCRIPT_DIR/../venv/bin/sem" -p "$OPENHANDS" -n 50 'LLM integration and API calls'
 
 echo ""
 echo "=== Semgrep Static Analysis Examples ==="
 echo ""
 
 echo "6. Find OpenAI usage with custom rules (ai-ui)"
-semgrep scan -c "$BASEDIR/my-detect-openai.yaml" --json "$AI_UI" 2>/dev/null | jq -r '["RULE", "FILE:LINE", "FINDING"], (.results[] | [(.check_id | split(".") | last), "\(.path | split("/") | last):\(.start.line)", (.extra.lines | split("\n") | first | gsub("^\\s+"; ""))]) | @tsv' | column -t -s $'\t'
+semgrep scan -c "$BASEDIR/semgrep/rules/my-detect-openai.yaml" --json "$AI_UI" 2>/dev/null | jq -r '["RULE", "FILE:LINE", "FINDING"], (.results[] | [(.check_id | split(".") | last), "\(.path | split("/") | last):\(.start.line)", (.extra.lines | split("\n") | first | gsub("^\\s+"; ""))]) | @tsv' | column -t -s $'\t'
 
 echo ""
 echo "7. Find OpenAI usage with full code context (ai-ui)"
-semgrep scan -c "$BASEDIR/my-detect-openai.yaml" --json "$AI_UI" 2>/dev/null | jq -r '.results[] | "=== \(.path | split("/") | last):\(.start.line)-\(.end.line) ===\nRule: \(.check_id | split(".") | last)\n\(.extra.lines)\n"'
+semgrep scan -c "$BASEDIR/semgrep/rules/my-detect-openai.yaml" --json "$AI_UI" 2>/dev/null | jq -r '.results[] | "=== \(.path | split("/") | last):\(.start.line)-\(.end.line) ===\nRule: \(.check_id | split(".") | last)\n\(.extra.lines)\n"'
 
 echo ""
 echo "8. Shadow AI detection with p/shadow-ai-pro + custom rules (ai-ui)"
-semgrep scan --config p/shadow-ai-pro --config "$BASEDIR/shadow-ai-extended.yaml" --json "$AI_UI" 2>/dev/null | jq -r '["RULE", "FILE:LINE", "FINDING"], (.results[] | [(.check_id | split(".") | last), "\(.path | split("/") | last):\(.start.line)", (.extra.lines | split("\n") | first | gsub("^\\s+"; ""))]) | @tsv' | column -t -s $'\t'
+semgrep scan --config p/shadow-ai-pro --config "$BASEDIR/semgrep/rules/shadow-ai-extended.yaml" --json "$AI_UI" 2>/dev/null | jq -r '["RULE", "FILE:LINE", "FINDING"], (.results[] | [(.check_id | split(".") | last), "\(.path | split("/") | last):\(.start.line)", (.extra.lines | split("\n") | first | gsub("^\\s+"; ""))]) | @tsv' | column -t -s $'\t'
 
 echo ""
 echo "9. Shadow AI detection on large project (OpenHands)"

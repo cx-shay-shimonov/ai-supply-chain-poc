@@ -9,7 +9,6 @@ import re
 from collections import defaultdict
 from typing import Dict, List, Set, Tuple
 
-
 # Comprehensive AI asset patterns for ALL providers
 ASSET_PATTERNS = {
     'openai_models': [

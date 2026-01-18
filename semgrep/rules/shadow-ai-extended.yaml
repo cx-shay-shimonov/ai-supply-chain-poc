@@ -52,7 +52,7 @@ rules:
     patterns:
       - pattern-regex: '(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|COHERE_API_KEY)'
     message: "AI service API key reference detected"
-    languages: [javascript, typescript, python, bash, shell]
+    languages: [javascript, typescript, python, bash]
     severity: WARNING
     
   - id: detect-hardcoded-api-keys

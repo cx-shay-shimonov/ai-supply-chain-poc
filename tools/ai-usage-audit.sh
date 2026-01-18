@@ -11,16 +11,17 @@
 #   ./ai-usage-audit.sh projects-samples/OpenHands 500
 #   ./ai-usage-audit.sh projects-samples/ai-ui 1000
 
-BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+BASEDIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$BASEDIR"
 cd "$BASEDIR"
 
 # Create timestamped output directory
 TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-OUTPUT_DIR="$BASEDIR/output/$TIMESTAMP"
+OUTPUT_DIR="$BASEDIR/tools/output/$TIMESTAMP"
 mkdir -p "$OUTPUT_DIR"
 
 # Default target or use first argument
-TARGET="${1:-projects-samples/OpenHands}"
+TARGET="${1:-$BASEDIR/projects-samples/OpenHands}"
 
 # Default limit or use second argument
 LIMIT="${2:-100000}"
@@ -53,7 +54,7 @@ EMBEDDINGS_PATH="$TARGET/.embeddings"
 if [ ! -f "$EMBEDDINGS_PATH" ]; then
     echo "⚠️  No embeddings found. Generating..."
     echo ""
-    venv/bin/sem --embed -p "$TARGET"
+    "$BASEDIR/sem/venv/bin/sem" --embed -p "$TARGET"
     echo ""
     
     if [ -f "$EMBEDDINGS_PATH" ]; then
@@ -85,7 +86,7 @@ else
     echo "Running semantic search for AI/LLM usage (limit: $LIMIT)..."
     
     # Run semantic search and save to temp file with pretty formatting
-    venv/bin/python sem-query.py -p "$TARGET" --json -n "$LIMIT" 'usages of gpt-5', 'gpt-5-latest', 'gpt-5-2025-11-04', 'gpt-5-pro', 'gpt-5-mini', 'gpt-5-nano', 'o4-mini', 'o3-high', 'gpt-4.1-mini', 'gpt-4o', 'gpt-oss-120b', 'claude-opus-4-5-latest', 'claude-opus-4-5-20251101', 'claude-sonnet-4-5-latest', 'claude-sonnet-4-5-20250929', 'claude-haiku-4-5', 'claude-3-5-haiku-latest', 'claude-code-2-1', 'gemini-3-pro', 'gemini-3-flash', 'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-live-2.5-flash-native-audio', 'deepseek-v4', 'deepseek-v3.2', 'deepseek-reasoner', 'deepseek-chat', 'llama-3.3-70b-instruct', 'llama-3.1-405b-instruct', 'llama-4-preview-70b', 'mistral-large-2511', 'mistral-nemo-latest', 'pixtral-large-latest', 'codestral-latest', 'grok-4-fast-reasoning', 'grok-code-fast-1', 'glm-4.7-thinking', 'qwen3-72b-instruct', 'mimo-v2-flash' 2>/dev/null | jq '.' > "$OUTPUT_DIR/sem_results.json"
+    "$BASEDIR/sem/venv/bin/python" "$BASEDIR/sem/sem-query.py" -p "$TARGET" --json -n "$LIMIT" 'usages of gpt-5', 'gpt-5-latest', 'gpt-5-2025-11-04', 'gpt-5-pro', 'gpt-5-mini', 'gpt-5-nano', 'o4-mini', 'o3-high', 'gpt-4.1-mini', 'gpt-4o', 'gpt-oss-120b', 'claude-opus-4-5-latest', 'claude-opus-4-5-20251101', 'claude-sonnet-4-5-latest', 'claude-sonnet-4-5-20250929', 'claude-haiku-4-5', 'claude-3-5-haiku-latest', 'claude-code-2-1', 'gemini-3-pro', 'gemini-3-flash', 'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-live-2.5-flash-native-audio', 'deepseek-v4', 'deepseek-v3.2', 'deepseek-reasoner', 'deepseek-chat', 'llama-3.3-70b-instruct', 'llama-3.1-405b-instruct', 'llama-4-preview-70b', 'mistral-large-2511', 'mistral-nemo-latest', 'pixtral-large-latest', 'codestral-latest', 'grok-4-fast-reasoning', 'grok-code-fast-1', 'glm-4.7-thinking', 'qwen3-72b-instruct', 'mimo-v2-flash' 2>/dev/null | jq '.' > "$OUTPUT_DIR/sem_results.json"
     
     # Count results
     SEM_COUNT=$(jq '.results | length' "$OUTPUT_DIR/sem_results.json" 2>/dev/null || echo "0")
@@ -112,7 +113,7 @@ echo "Running Semgrep with shadow-ai-pro + custom rules..."
 # Run semgrep and save to temp file with pretty formatting
 semgrep scan \
     --config p/shadow-ai-pro \
-    --config "$BASEDIR/my-detect-openai.yaml" \
+    --config "$BASEDIR/semgrep/rules/my-detect-openai.yaml" \
     "$TARGET" \
     --json 2>/dev/null | jq '.' > "$OUTPUT_DIR/semgrep_results.json"
 
@@ -246,14 +247,14 @@ echo ""
 # Extract assets from Semantic Search results
 if [ "$SKIP_SEM" = false ] && [ "$SEM_COUNT" -gt 0 ]; then
     echo "🔍 Processing Semantic Search results..."
-    python3 "$BASEDIR/ai_asset_extractor.py" semantic "$OUTPUT_DIR/sem_results.json" > "$SEM_ASSETS_FILE"
+    python3 "$BASEDIR/shared/ai_asset_extractor.py" semantic "$OUTPUT_DIR/sem_results.json" > "$SEM_ASSETS_FILE"
     echo "   ✅ Semantic assets extracted"
 fi
 
 # Extract assets from Semgrep results
 if [ "$SEMGREP_COUNT" -gt 0 ]; then
     echo "🎯 Processing Semgrep results..."
-    python3 "$BASEDIR/ai_asset_extractor.py" semgrep "$OUTPUT_DIR/semgrep_results.json" > "$SEMGREP_ASSETS_FILE"
+    python3 "$BASEDIR/shared/ai_asset_extractor.py" semgrep "$OUTPUT_DIR/semgrep_results.json" > "$SEMGREP_ASSETS_FILE"
     echo "   ✅ Semgrep assets extracted"
 fi
 

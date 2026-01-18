@@ -1,7 +1,8 @@
 #!/bin/bash
 # Interactive setup and demo script for AI Supply Chain POC
 
-cd /Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc
+BASEDIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$BASEDIR"
 
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║          AI Supply Chain POC - Setup & Demo                   ║"
@@ -9,18 +10,18 @@ echo "╚═══════════════════════�
 echo ""
 
 # Check if venv exists
-if [ ! -d "venv" ]; then
+if [ ! -d "sem/venv" ]; then
     echo "❌ Virtual environment not found!"
     echo "Please run the installation steps from README.md first"
     exit 1
 fi
 
 # Check if embeddings exist
-if [ ! -f "projects-samples/cnas-mfe/.embeddings" ]; then
+if [ ! -f ""$BASEDIR/projects-samples/cnas-mfe/.embeddings" ]; then
     echo "⚠️  cnas-mfe embeddings not found"
 fi
 
-if [ ! -f "projects-samples/ai-ui/.embeddings" ]; then
+if [ ! -f ""$BASEDIR/projects-samples/ai-ui/.embeddings" ]; then
     echo "⚠️  ai-ui embeddings not found"
 fi
 
@@ -33,11 +34,11 @@ read -p "Would you like to generate embeddings for sample projects? (y/n) " -n 1
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "📦 Generating embeddings for cnas-mfe..."
-    venv/bin/sem --embed -p projects-samples/cnas-mfe
+    "$BASEDIR/sem/venv/bin/sem" --embed -p "$BASEDIR/projects-samples/cnas-mfe
     echo ""
     
     echo "📦 Generating embeddings for ai-ui..."
-    venv/bin/sem --embed -p projects-samples/ai-ui
+    "$BASEDIR/sem/venv/bin/sem" --embed -p "$BASEDIR/projects-samples/ai-ui
     echo ""
 fi
 
@@ -49,20 +50,20 @@ echo ""
 echo "1️⃣  Semantic Search Examples:"
 echo ""
 echo "   # Search cnas-mfe for React components"
-echo "   venv/bin/sem -p projects-samples/cnas-mfe -n 20 'React components'"
+echo "   "$BASEDIR/sem/venv/bin/sem" -p "$BASEDIR/projects-samples/cnas-mfe -n 20 'React components'"
 echo ""
 echo "   # Search ai-ui for OpenAI usage"
-echo "   venv/bin/sem -p projects-samples/ai-ui -n 20 'openai'"
+echo "   "$BASEDIR/sem/venv/bin/sem" -p "$BASEDIR/projects-samples/ai-ui -n 20 'openai'"
 echo ""
 echo "2️⃣  Static Analysis Examples:"
 echo ""
 echo "   # Scan ai-ui for Shadow AI"
-echo "   semgrep scan --config p/shadow-ai-pro projects-samples/ai-ui/"
+echo "   semgrep scan --config p/shadow-ai-pro "$BASEDIR/projects-samples/ai-ui/"
 echo ""
 echo "3️⃣  Full Audit:"
 echo ""
 echo "   # Run complete audit on ai-ui"
-echo "   bash ai-usage-audit.sh projects-samples/ai-ui 50"
+echo "   bash ai-usage-audit.sh "$BASEDIR/projects-samples/ai-ui 50"
 echo ""
 echo "4️⃣  More Examples:"
 echo ""
@@ -77,19 +78,19 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "═══════════════════════════════════════════════════════════════"
     echo "Demo 1: Semantic Search on cnas-mfe"
     echo "═══════════════════════════════════════════════════════════════"
-    venv/bin/sem -p projects-samples/cnas-mfe -n 5 'React components'
+    "$BASEDIR/sem/venv/bin/sem" -p "$BASEDIR/projects-samples/cnas-mfe -n 5 'React components'
     echo ""
     
     echo "═══════════════════════════════════════════════════════════════"
     echo "Demo 2: Semantic Search on ai-ui"
     echo "═══════════════════════════════════════════════════════════════"
-    venv/bin/sem -p projects-samples/ai-ui -n 5 'openai usage'
+    "$BASEDIR/sem/venv/bin/sem" -p "$BASEDIR/projects-samples/ai-ui -n 5 'openai usage'
     echo ""
     
     echo "═══════════════════════════════════════════════════════════════"
     echo "Demo 3: Semgrep Scan on ai-ui"
     echo "═══════════════════════════════════════════════════════════════"
-    semgrep scan --config my-detect-openai.yaml projects-samples/ai-ui/ --json 2>/dev/null | jq -r '["RULE", "FILE:LINE", "CODE"], (.results[] | [(.check_id | split(".") | last), "\(.path | split("/") | last):\(.start.line)", (.extra.lines | split("\n")[0] | gsub("^\\s+"; ""))]) | @tsv' | column -t -s $'\t'
+    semgrep scan --config "$BASEDIR/semgrep/rules/my-detect-openai.yaml" "$BASEDIR/projects-samples/ai-ui/ --json 2>/dev/null | jq -r '["RULE", "FILE:LINE", "CODE"], (.results[] | [(.check_id | split(".") | last), "\(.path | split("/") | last):\(.start.line)", (.extra.lines | split("\n")[0] | gsub("^\\s+"; ""))]) | @tsv' | column -t -s $'\t'
 fi
 
 echo ""
