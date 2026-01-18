@@ -14,13 +14,16 @@
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$BASEDIR"
 
-# Create timestamped output directory
-TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-OUTPUT_DIR="$BASEDIR/output/$TIMESTAMP"
-mkdir -p "$OUTPUT_DIR"
-
 # Default target or use first argument
 TARGET="${1:-projects-samples/ai-ui}"
+
+# Extract project name from target path
+PROJECT_NAME=$(basename "$TARGET")
+
+# Create timestamped output directory with project name
+TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
+OUTPUT_DIR="$BASEDIR/output/sem-audit-${PROJECT_NAME}-${TIMESTAMP}"
+mkdir -p "$OUTPUT_DIR"
 
 # Default limit or use second argument
 LIMIT="${2:-100000}"
@@ -38,7 +41,7 @@ echo "╚═══════════════════════�
 echo ""
 echo "📁 Target: $TARGET"
 echo "🔢 Result Limit: $LIMIT"
-echo "📂 Output: output/$TIMESTAMP/"
+echo "📂 Output: output/sem-audit-${PROJECT_NAME}-${TIMESTAMP}/"
 echo "⏰ Started: $(date '+%Y-%m-%d %H:%M:%S')"
 echo ""
 
@@ -83,21 +86,61 @@ if [ "$SKIP_SEM" = true ]; then
     SEM_COUNT=0
 else
     echo "Running semantic search for AI/LLM usage (limit: $LIMIT)..."
+    echo ""
     
-    # Run semantic search and save to temp file with pretty formatting
-    venv/bin/python sem-query.py -p "$TARGET" --json -n "$LIMIT" 'usages of gpt-5', 'gpt-5-latest', 'gpt-5-2025-11-04', 'gpt-5-pro', 'gpt-5-mini', 'gpt-5-nano', 'o4-mini', 'o3-high', 'gpt-4.1-mini', 'gpt-4o', 'gpt-oss-120b', 'claude-opus-4-5-latest', 'claude-opus-4-5-20251101', 'claude-sonnet-4-5-latest', 'claude-sonnet-4-5-20250929', 'claude-haiku-4-5', 'claude-3-5-haiku-latest', 'claude-code-2-1', 'gemini-3-pro', 'gemini-3-flash', 'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-live-2.5-flash-native-audio', 'deepseek-v4', 'deepseek-v3.2', 'deepseek-reasoner', 'deepseek-chat', 'llama-3.3-70b-instruct', 'llama-3.1-405b-instruct', 'llama-4-preview-70b', 'mistral-large-2511', 'mistral-nemo-latest', 'pixtral-large-latest', 'codestral-latest', 'grok-4-fast-reasoning', 'grok-code-fast-1', 'glm-4.7-thinking', 'qwen3-72b-instruct', 'mimo-v2-flash' 2>/dev/null | jq '.' > "$OUTPUT_DIR/sem_results.json"
+    # Use multiple focused queries for better results
+    # Query 1: General AI API usage (catches OpenAI, Anthropic, etc.)
+    echo "  🔍 Query 1: AI API keys and configuration..."
+    venv/bin/python sem-query.py -p "$TARGET" --json -n "$((LIMIT/3))" \
+        'usages of gpt-5, gpt-5-latest, gpt-5-2025-11-04, gpt-5-pro, gpt-5-mini, gpt-5-nano, o4-mini, o3-high, gpt-4.1-mini, gpt-4o, gpt-oss-120b, claude-opus-4-5-latest, claude-opus-4-5-20251101, claude-sonnet-4-5-latest, claude-sonnet-4-5-20250929, claude-haiku-4-5, claude-3-5-haiku-latest, claude-code-2-1, gemini-3-pro, gemini-3-flash, gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-live-2.5-flash-native-audio, deepseek-v4, deepseek-v3.2, deepseek-reasoner, deepseek-chat, llama-3.3-70b-instruct, llama-3.1-405b-instruct, llama-4-preview-70b, mistral-large-2511, mistral-nemo-latest, pixtral-large-latest, codestral-latest, grok-4-fast-reasoning, grok-code-fast-1, glm-4.7-thinking, qwen3-72b-instruct, mimo-v2-flash' \
+        2>/dev/null > "$OUTPUT_DIR/sem_results_q1.json"
+    
+    # Query 2: LLM completions and chat
+    # echo "  🔍 Query 2: LLM completions and chat..."
+    # venv/bin/python sem-query.py -p "$TARGET" --json -n "$((LIMIT/3))" \
+    #     'GPT Claude Gemini chat completions streaming API calls messages' \
+    #     2>/dev/null > "$OUTPUT_DIR/sem_results_q2.json"
+    
+    # # Query 3: AI model configuration
+    # echo "  🔍 Query 3: AI model configuration and usage..."
+    # venv/bin/python sem-query.py -p "$TARGET" --json -n "$((LIMIT/3))" \
+    #     'AI language model configuration temperature tokens embedding vector' \
+    #     2>/dev/null > "$OUTPUT_DIR/sem_results_q3.json"
+    
+    # Merge results and deduplicate by file:line
+    echo "  🔄 Merging and deduplicating results..."
+    jq -s '
+        {
+            query: "Multi-query AI/LLM usage scan",
+            repository: .[0].repository,
+            results: ([.[].results[]] | 
+                      group_by(.file + ":" + (.line | tostring)) | 
+                      map(max_by(.score)) |
+                      sort_by(-.score) |
+                      .[0:'$LIMIT'] |
+                      to_entries |
+                      map(.value + {rank: (.key + 1)}))
+        }
+    ' "$OUTPUT_DIR/sem_results_q1.json" \
+      "$OUTPUT_DIR/sem_results_q2.json" \
+      "$OUTPUT_DIR/sem_results_q3.json" \
+      > "$OUTPUT_DIR/sem_results.json"
+    
+    # Clean up individual query files
+    rm -f "$OUTPUT_DIR/sem_results_q1.json" "$OUTPUT_DIR/sem_results_q2.json" "$OUTPUT_DIR/sem_results_q3.json"
     
     # Count results
     SEM_COUNT=$(jq '.results | length' "$OUTPUT_DIR/sem_results.json" 2>/dev/null || echo "0")
     
+    echo ""
     echo "✅ Semantic Search Complete"
-    echo "   Findings: $SEM_COUNT code locations"
+    echo "   Findings: $SEM_COUNT unique code locations"
     
     # Show top 5 results
     if [ "$SEM_COUNT" -gt 0 ]; then
         echo ""
         echo "   📊 Top 5 Results:"
-        jq -r '.results[0:5] | .[] | "      • \(.file | split("/") | last):\(.line) (score: \(.score | tostring | .[0:6]))"' "$OUTPUT_DIR/sem_results.json" 2>/dev/null
+        jq -r '.results[0:5] | .[] | "      • \(.file | split("/") | last):\(.line):\(.column) (certainty: \(.certainty), \(.certainty_percent)%)"' "$OUTPUT_DIR/sem_results.json" 2>/dev/null
     fi
 fi
 
@@ -142,16 +185,35 @@ echo ""
 # Calculate totals
 TOTAL_FINDINGS=$((SEM_COUNT + SEMGREP_COUNT))
 
+# Scan for variable-based model concatenations
+echo ""
+echo "🔍 Scanning for concatenated model variables..."
+venv/bin/python scan-model-variables.py "$TARGET" > "$OUTPUT_DIR/variable_models.json"
+VARIABLE_MODEL_COUNT=$(jq '.count' "$OUTPUT_DIR/variable_models.json" 2>/dev/null || echo "0")
+
 # Show comparison
 echo "┌────────────────────────────────────────────────────────────┐"
 echo "│                     FINDINGS                               │"
 echo "├────────────────────────────────────────────────────────────┤"
 printf "│  %-30s %26s  │\n" "Semantic Search (sem):" "$SEM_COUNT findings"
+printf "│  %-30s %26s  │\n" "Variable Models:" "$VARIABLE_MODEL_COUNT findings"
 # printf "│  %-30s %26s  │\n" "Static Analysis (semgrep):" "$SEMGREP_COUNT findings"
 echo "├────────────────────────────────────────────────────────────┤"
 # printf "│  %-30s %26s  │\n" "Total Unique Checks:" "$TOTAL_FINDINGS combined"
 # echo "└────────────────────────────────────────────────────────────┘"
 echo ""
+
+# Show variable-constructed models if found
+if [ "$VARIABLE_MODEL_COUNT" -gt 0 ]; then
+    echo "📦 Variable-Constructed Models Found:"
+    jq -r '.variable_models[] | 
+           if .type == "concatenated" then
+             "   • \(.model) (\(.file | split("/") | .[-1]):\(.name_line) concatenated)"
+           else
+             "   • \(.model) (\(.file | split("/") | .[-1]):\(.line) direct)"
+           end' "$OUTPUT_DIR/variable_models.json"
+    echo ""
+fi
 
 # Analysis
 echo "📈 Analysis:"
@@ -191,18 +253,22 @@ CSV_FILE="$OUTPUT_DIR/ai_audit_comparison.csv"
 echo "Creating CSV report..."
 
 # CSV Header
-echo "Tool,Type,Count,File,Line,Score/Severity,Certainty,Description" > "$CSV_FILE"
+echo "Rank,Tool,Type,File,Line,Column,Score,Certainty,Certainty %,Match Reason,Matched Tokens,Code Preview" > "$CSV_FILE"
 
 # Add Semantic Search results
 if [ "$SKIP_SEM" = false ] && [ "$SEM_COUNT" -gt 0 ]; then
     jq -r '.results[] | [
+        .rank,
         "Semantic Search",
         "AI Usage Pattern",
-        "",
         (.file | split("/") | last),
         .line,
-        (.score | tostring),
+        .column,
+        (.score | tostring | .[0:6]),
+        .certainty,
         (.certainty_percent | tostring) + "%",
+        .match_reason,
+        (.matched_tokens | join(", ")),
         (.code | split("\n") | first | gsub("\""; "\"\""))
     ] | @csv' "$OUTPUT_DIR/sem_results.json" >> "$CSV_FILE" 2>/dev/null
 fi
@@ -319,7 +385,7 @@ echo "════════════════════════�
 echo "💾 All Results Saved"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
-echo "📂 Output Directory: output/$TIMESTAMP/"
+echo "📂 Output Directory: output/sem-audit-${PROJECT_NAME}-${TIMESTAMP}/"
 echo ""
 echo "📊 Files Created:"
 echo "   • ai_audit_comparison.csv"

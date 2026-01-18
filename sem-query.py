@@ -36,7 +36,9 @@ os.environ['PYTORCH_MPS_DISABLE'] = '1'
 # Add semantic_code_search to path
 sys.path.insert(0, str(Path(__file__).parent / 'venv/lib/python3.11/site-packages'))
 
-from semantic_code_search.search import do_search
+from semantic_code_search.query import _query_embeddings, _search
+import gzip
+import pickle
 from sentence_transformers import SentenceTransformer
 import argparse as arg_module
 
@@ -129,28 +131,31 @@ def explain_match(query_text, code_text):
     matches, highlighted = find_matching_tokens(query_text, code_text)
     
     if not matches and not highlighted:
-        return "Semantic similarity"
+        return "Semantic similarity (contextual match)"
     
     reasons = []
     
     # Show direct matches
     if matches:
-        if len(matches) <= 3:
-            reasons.append(f"Contains '{', '.join(matches)}'")
+        if len(matches) == 1:
+            reasons.append(f"Contains '{matches[0]}'")
+        elif len(matches) <= 3:
+            formatted_matches = "', '".join(sorted(matches))
+            reasons.append(f"Contains '{formatted_matches}'")
         else:
-            match_list = ', '.join(matches[:3])
-            reasons.append(f"Contains '{match_list}' +{len(matches)-3} more")
+            formatted_matches = "', '".join(sorted(matches)[:3])
+            reasons.append(f"Contains '{formatted_matches}' +{len(matches)-3} more")
     
     # Show tokens that are part of larger identifiers
     compound_tokens = [h for h in highlighted if h.lower() not in [m.lower() for m in matches]]
     if compound_tokens:
         if len(compound_tokens) <= 3:
-            reasons.append(f"Related: {', '.join(compound_tokens)}")
+            reasons.append(f"Related: {', '.join(sorted(compound_tokens))}")
         else:
-            token_list = ', '.join(compound_tokens[:3])
+            token_list = ', '.join(sorted(compound_tokens)[:3])
             reasons.append(f"Related: {token_list} +{len(compound_tokens)-3} more")
     
-    return ' | '.join(reasons) if reasons else "Semantic similarity"
+    return ' | '.join(reasons) if reasons else "Semantic similarity (contextual match)"
 
 
 def format_text_output(results, query_text, show_code=True, use_color=True):
@@ -166,18 +171,21 @@ def format_text_output(results, query_text, show_code=True, use_color=True):
     output.append("=" * 80)
     output.append("")
     
-    for i, result in enumerate(results, 1):
+    for i, result_tuple in enumerate(results, 1):
+        score = float(result_tuple[0])
+        result = result_tuple[1]
         file_path = result['file']
         line_num = result['line']
-        score = result['score']
-        code = result['code']
+        column_num = result.get('column', 0)
+        code = result.get('text', result.get('code', ''))
         
         # Header for this result
+        location = f"{file_path}:{line_num}:{column_num}"
         if use_color:
-            output.append(f"{Colors.BOLD}{i}. {Colors.GREEN}{file_path}:{line_num}{Colors.RESET} "
+            output.append(f"{Colors.BOLD}{i}. {Colors.GREEN}{location}{Colors.RESET} "
                          f"{Colors.GRAY}(score: {score:.4f}){Colors.RESET}")
         else:
-            output.append(f"{i}. {file_path}:{line_num} (score: {score:.4f})")
+            output.append(f"{i}. {location} (score: {score:.4f})")
         
         # Show match reasoning
         reason = explain_match(query_text, code)
@@ -205,24 +213,55 @@ def format_text_output(results, query_text, show_code=True, use_color=True):
     return '\n'.join(output)
 
 
-def format_json_output(results, query_text):
-    """Format results as JSON"""
+def calculate_certainty(score):
+    """Calculate certainty level and percentage from score.
+    
+    Scores typically range from 0.0 to 1.0, but we scale them to be more
+    meaningful as percentages (using a multiplier to spread the range).
+    """
+    # Scale score to percentage (multiply by ~140 to get better spread)
+    certainty_percent = min(score * 140, 100)
+    
+    # Determine certainty level
+    if certainty_percent >= 60:
+        certainty = "high"
+    elif certainty_percent >= 50:
+        certainty = "medium"
+    else:
+        certainty = "low"
+    
+    return certainty, round(certainty_percent, 2)
+
+
+def format_json_output(results, query_text, repo_path):
+    """Format results as JSON with enhanced metadata"""
     json_results = {
         'query': query_text,
-        'total_results': len(results),
+        'repository': str(repo_path),
         'results': []
     }
     
-    for result in results:
+    for rank, result_tuple in enumerate(results, 1):
+        score = float(result_tuple[0])
+        result = result_tuple[1]
+        code = result.get('text', result.get('code', ''))
+        
+        # Calculate certainty
+        certainty, certainty_percent = calculate_certainty(score)
+        
         # Get highlighted tokens to mark them in the code
-        matches, highlighted = find_matching_tokens(query_text, result['code'])
+        matches, highlighted = find_matching_tokens(query_text, code)
         
         json_results['results'].append({
+            'rank': rank,
+            'score': score,
+            'certainty': certainty,
+            'certainty_percent': certainty_percent,
             'file': result['file'],
             'line': result['line'],
-            'score': result['score'],
-            'code': result['code'],
-            'match_reason': explain_match(query_text, result['code']),
+            'column': result.get('column', 0),
+            'code': code,
+            'match_reason': explain_match(query_text, code),
             'matched_tokens': matches,
             'highlighted_tokens': highlighted
         })
@@ -268,10 +307,13 @@ Examples:
         print(f"Run: venv/bin/sem --embed -p {repo_path}", file=sys.stderr)
         sys.exit(1)
     
-    # Load model
+    # Load model with CPU device
     model_name = 'krlvi/sentence-msmarco-bert-base-dot-v5-nlpl-code_search_net'
     try:
+        import torch
+        torch.set_default_device('cpu')
         model = SentenceTransformer(model_name, device='cpu')
+        model = model.to('cpu')
     except Exception as e:
         print(f"Error loading model: {e}", file=sys.stderr)
         sys.exit(1)
@@ -280,14 +322,26 @@ Examples:
     search_args = arg_module.Namespace(
         path_to_repo=str(repo_path),
         query_text=args.query,
-        num_results=args.num_results,
-        extension=args.extension,
-        editor=None
+        n_results=args.num_results,
+        file_extension=args.extension,
+        editor=None,
+        model_name_or_path='krlvi/sentence-msmarco-bert-base-dot-v5-nlpl-code_search_net'
     )
     
     # Perform search
     try:
-        results = do_search(search_args, model)
+        # Load embeddings
+        embeddings_file = repo_path / '.embeddings'
+        with gzip.open(embeddings_file, 'r') as f:
+            dataset = pickle.loads(f.read())
+        
+        # Query with CPU tensors
+        query_embedding = model.encode(args.query, convert_to_tensor=True).cpu()
+        corpus_embeddings = dataset.get('embeddings').cpu()
+        
+        # Search
+        results = _search(query_embedding, corpus_embeddings, dataset.get('functions'), 
+                         k=args.num_results, file_extension=args.extension)
     except Exception as e:
         print(f"Error during search: {e}", file=sys.stderr)
         sys.exit(1)
@@ -296,7 +350,7 @@ Examples:
     use_color = not args.no_color and not args.json and sys.stdout.isatty()
     
     if args.json:
-        output_text = format_json_output(results, args.query)
+        output_text = format_json_output(results, args.query, repo_path)
     else:
         show_code = not args.no_code
         output_text = format_text_output(results, args.query, show_code, use_color)
