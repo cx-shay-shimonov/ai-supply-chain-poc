@@ -1,0 +1,139 @@
+Based on my efficient analysis using broad regex patterns, here's the complete JSON report for the ai-ui codebase:
+
+```json
+{
+  "project": {
+    "name": "ai-ui",
+    "path": "/Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc/projects-samples/ai-ui",
+    "total_files_scanned": 4
+  },
+  "llm_models": {
+    "total_references": 17,
+    "by_provider": {
+      "openai": [
+        {
+          "model": "gpt-4o-mini",
+          "file": "server.js",
+          "line": 14,
+          "context": "commented out model reference",
+          "usage": "inactive"
+        },
+        {
+          "model": "gpt-5-2025-11-04",
+          "file": "server.js",
+          "lines": [43, 75],
+          "context": "commented out future model references",
+          "usage": "inactive"
+        },
+        {
+          "model": "dall-e-3",
+          "file": "server.js",
+          "line": 141,
+          "context": "active image generation",
+          "usage": "active"
+        },
+        {
+          "model": "gpt-4o-mini",
+          "file": "README.md",
+          "lines": [7, 67],
+          "context": "documentation references",
+          "usage": "documented"
+        },
+        {
+          "model": "dall-e-3",
+          "file": "README.md",
+          "lines": [8, 68],
+          "context": "documentation references",
+          "usage": "documented"
+        }
+      ],
+      "anthropic": [],
+      "google": [],
+      "meta": [],
+      "mistral": [],
+      "other": []
+    },
+    "files_with_models": [
+      "server.js",
+      "README.md"
+    ]
+  },
+  "api_calls": {
+    "total_calls": 5,
+    "by_type": {
+      "completion": [
+        {
+          "pattern": "openai.chat.completions.create",
+          "file": "server.js",
+          "lines": [41, 73, 120],
+          "context": "streaming chat completions",
+          "type": "streaming"
+        }
+      ],
+      "async_completion": [],
+      "streaming": [
+        {
+          "pattern": "openai.chat.completions.create",
+          "file": "server.js",
+          "lines": [41, 73, 120],
+          "context": "all use stream: true",
+          "type": "streaming_chat"
+        }
+      ],
+      "other": [
+        {
+          "pattern": "openai.images.generate",
+          "file": "server.js",
+          "line": 140,
+          "context": "DALL-E image generation",
+          "type": "image_generation"
+        },
+        {
+          "pattern": "openai reference",
+          "file": "script.js",
+          "line": 249,
+          "context": "system message mentioning OpenAI",
+          "type": "reference"
+        }
+      ]
+    },
+    "files_with_calls": [
+      "server.js",
+      "script.js"
+    ]
+  },
+  "summary": {
+    "unique_models_found": [
+      "gpt-4o-mini",
+      "gpt-5-2025-11-04",
+      "dall-e-3"
+    ],
+    "unique_api_patterns": [
+      "openai.chat.completions.create",
+      "openai.images.generate"
+    ],
+    "most_used_model": "gpt-4o-mini",
+    "most_used_api": "openai.chat.completions.create",
+    "recommendations": [
+      "The codebase is well-structured with proper OpenAI API integration",
+      "Multiple streaming chat completion endpoints suggest good scalability design",
+      "DALL-E 3 integration for dynamic backgrounds is a nice feature",
+      "Consider removing commented-out model references (gpt-5-2025-11-04) to clean up code",
+      "The system uses dynamic model selection (MM, mm3, mm variables) which provides flexibility",
+      "All chat completions use streaming which is good for user experience",
+      "Good separation between chat and image generation functionality"
+    ]
+  }
+}
+```
+
+## Key Findings:
+
+1. **Primary LLM Usage**: The project primarily uses OpenAI's GPT-4o-mini for chat completions and DALL-E 3 for image generation
+2. **API Pattern**: All chat interactions use streaming completions (`openai.chat.completions.create` with `stream: true`)
+3. **Architecture**: Clean separation with server.js handling API calls and script.js managing frontend interactions
+4. **Dynamic Models**: Uses variable-based model selection allowing for easy model switching
+5. **Features**: Implements both chat completion and image generation in a cohesive UI experience
+6. **Future-Ready**: Contains commented references to newer models (gpt-5) suggesting forward compatibility planning
+
+The codebase demonstrates modern AI integration patterns with proper streaming, error handling, and a clean API structure.

@@ -1,0 +1,95 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   ✨ CLAUDE + MCP SCANNER AGENT - READY TO USE! ✨           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+📦 WHAT'S INSTALLED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Python virtual environment (venv/)
+✅ Claude API SDK (anthropic 0.76.0)
+✅ MCP SDK (mcp 1.25.0)
+✅ MCP Tree-sitter server (0.5.1)
+✅ All dependencies installed & tested
+
+🎯 WHAT THIS DOES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Combines Claude API + MCP tree-sitter for intelligent code scanning:
+
+  1. Claude decides what patterns to search for
+  2. MCP executes fast tree-sitter searches
+  3. Claude analyzes results & generates insights
+  4. Outputs structured JSON + readable text report
+
+🚀 HOW TO RUN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 1. Get your Anthropic API key from:
+  #    https://console.anthropic.com/
+
+  # 2. Set the API key
+  export ANTHROPIC_API_KEY='sk-ant-...'
+
+  # 3. Navigate to the folder
+  cd mcp-server-tree-sitter/claude_mcp_scanner_agent
+
+  # 4. Activate virtual environment
+  source venv/bin/activate
+
+  # 5. Run the scanner!
+  python claude_mcp_scanner.py
+
+💰 COST ESTIMATE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Small project (ai-ui):    ~$0.02-0.05 per scan
+Large project (OpenHands): ~$0.15-0.30 per scan
+
+📊 OUTPUT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+llm_scan_results/
+  ├── ai-ui_analysis.json  (Structured data)
+  └── ai-ui_analysis.txt   (Human-readable)
+
+✨ FEATURES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ AI-powered analysis (Claude decides what to search)
+✅ Fast tree-sitter AST parsing (no false positives)
+✅ Batch processing (scan multiple projects)
+✅ Structured output (JSON + text)
+✅ Programmatic (integrate into CI/CD)
+
+🧪 TEST WITHOUT API KEY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  python test_mcp_connection.py
+
+📚 DOCUMENTATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  READY.md  - Quick start (THIS FILE expanded)
+  USAGE.md  - Step-by-step guide
+  README.md - Full documentation
+
+🎯 EXAMPLE COMMANDS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Run the scanner
+python claude_mcp_scanner.py
+
+# Test MCP connection (no API needed)
+python test_mcp_connection.py
+
+# View results
+cat llm_scan_results/ai-ui_analysis.json | jq .
+
+# Check API usage
+cat llm_scan_results/ai-ui_analysis.txt | grep "tokens"
+
+🆚 WHY USE THIS vs CLAUDE DESKTOP?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Claude Desktop:  Interactive, free, but manual
+This Tool:       Automated, programmatic, batch processing
+                 Perfect for: CI/CD, repeated scans, reporting
+
+═══════════════════════════════════════════════════════════════
+
+💡 TIP: Read READY.md for detailed quick start instructions!
+
+═══════════════════════════════════════════════════════════════

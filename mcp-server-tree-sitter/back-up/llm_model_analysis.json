@@ -1,0 +1,540 @@
+{
+  "projects": [
+    {
+      "name": "ai-ui",
+      "path": "/Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc/projects-samples/ai-ui",
+      "registration_result": {
+        "content": [
+          {
+            "text": "{\n  \"name\": \"ai-ui\",\n  \"root_path\": \"/Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc/projects-samples/ai-ui\",\n  \"description\": \"Project analysis: ai-ui\",\n  \"languages\": {\n    \"html\": 1,\n    \"css\": 1,\n    \"javascript\": 2,\n    \"markdown\": 1,\n    \"json\": 2\n  },\n  \"last_scan_time\": 1768772462\n}"
+          }
+        ]
+      }
+    }
+  ],
+  "model_names_found": [
+    {
+      "file": "README.md",
+      "line": 7,
+      "text": "- **Real-time Chat** — Streaming responses from GPT-4o-mini",
+      "context": [
+        {
+          "line": 5,
+          "text": "## Features",
+          "is_match": false
+        },
+        {
+          "line": 6,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 7,
+          "text": "- **Real-time Chat** — Streaming responses from GPT-4o-mini",
+          "is_match": true
+        },
+        {
+          "line": 8,
+          "text": "- **Dynamic Backgrounds** — AI-generated images based on conversation context using DALL-E 3",
+          "is_match": false
+        },
+        {
+          "line": 9,
+          "text": "- **Modern UI** — Clean, dark theme inspired by ChatGPT",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 19,
+      "text": "- OpenAI API key with GPT-4 and DALL-E access",
+      "context": [
+        {
+          "line": 17,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 18,
+          "text": "- Node.js 18+",
+          "is_match": false
+        },
+        {
+          "line": 19,
+          "text": "- OpenAI API key with GPT-4 and DALL-E access",
+          "is_match": true
+        },
+        {
+          "line": 20,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 21,
+          "text": "### Installation",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 67,
+      "text": "| `/api/chat` | POST | Stream chat completions from GPT-4o-mini |",
+      "context": [
+        {
+          "line": 65,
+          "text": "| Endpoint | Method | Description |",
+          "is_match": false
+        },
+        {
+          "line": 66,
+          "text": "|----------|--------|-------------|",
+          "is_match": false
+        },
+        {
+          "line": 67,
+          "text": "| `/api/chat` | POST | Stream chat completions from GPT-4o-mini |",
+          "is_match": true
+        },
+        {
+          "line": 68,
+          "text": "| `/api/generate-background` | POST | Generate background image with DALL-E 3 |",
+          "is_match": false
+        },
+        {
+          "line": 69,
+          "text": "| `/api/health` | GET | Health check and API key status |",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 82,
+      "text": "- **AI**: OpenAI GPT-4o-mini, DALL-E 3",
+      "context": [
+        {
+          "line": 80,
+          "text": "- **Frontend**: Vanilla HTML, CSS, JavaScript",
+          "is_match": false
+        },
+        {
+          "line": 81,
+          "text": "- **Backend**: Node.js, Express",
+          "is_match": false
+        },
+        {
+          "line": 82,
+          "text": "- **AI**: OpenAI GPT-4o-mini, DALL-E 3",
+          "is_match": true
+        },
+        {
+          "line": 83,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 84,
+          "text": "## License",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 14,
+      "text": "// const model1 = 'gpt-4o-mini';",
+      "context": [
+        {
+          "line": 12,
+          "text": "const model = `${mName}-${mVersion}`;",
+          "is_match": false
+        },
+        {
+          "line": 13,
+          "text": "console.log('model', model);",
+          "is_match": false
+        },
+        {
+          "line": 14,
+          "text": "// const model1 = 'gpt-4o-mini';",
+          "is_match": true
+        },
+        {
+          "line": 15,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 16,
+          "text": "",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 43,
+      "text": "            // model: 'gpt-5-2025-11-04',",
+      "context": [
+        {
+          "line": 41,
+          "text": "        const stream = await openai.chat.completions.create({",
+          "is_match": false
+        },
+        {
+          "line": 42,
+          "text": "            model: MM,",
+          "is_match": false
+        },
+        {
+          "line": 43,
+          "text": "            // model: 'gpt-5-2025-11-04',",
+          "is_match": true
+        },
+        {
+          "line": 44,
+          "text": "            messages: messages,",
+          "is_match": false
+        },
+        {
+          "line": 45,
+          "text": "            stream: true,",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 75,
+      "text": "            // model: 'gpt-5-2025-11-04',",
+      "context": [
+        {
+          "line": 73,
+          "text": "        const stream = await openai.chat.completions.create({",
+          "is_match": false
+        },
+        {
+          "line": 74,
+          "text": "            model: mm3,",
+          "is_match": false
+        },
+        {
+          "line": 75,
+          "text": "            // model: 'gpt-5-2025-11-04',",
+          "is_match": true
+        },
+        {
+          "line": 76,
+          "text": "            messages: messages,",
+          "is_match": false
+        },
+        {
+          "line": 77,
+          "text": "            stream: true,",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 121,
+      "text": "            // model: 'gpt-4o-mini',",
+      "context": [
+        {
+          "line": 119,
+          "text": "        // First, ask GPT to create an image prompt based on the conversation",
+          "is_match": false
+        },
+        {
+          "line": 120,
+          "text": "        const promptResponse = await openai.chat.completions.create({",
+          "is_match": false
+        },
+        {
+          "line": 121,
+          "text": "            // model: 'gpt-4o-mini',",
+          "is_match": true
+        },
+        {
+          "line": 122,
+          "text": "            model: mm,",
+          "is_match": false
+        },
+        {
+          "line": 123,
+          "text": "            messages: [",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 126,
+      "text": "                    content: `You are an expert at creating DALL-E image prompts. Based on the conversation context provided, create a single, visually stunning image prompt that captures the mood and theme of the discussion. The image should be VIVID, COLORFUL, and STRIKING - with rich, saturated colors and dramatic visual impact. Output ONLY the image prompt, nothing else. Make it artistic, bold, and memorable. Add \"vivid colors, dramatic lighting, high contrast, vibrant, cinematic, artistic, visually striking\" to ensure maximum visual impact.`",
+      "context": [
+        {
+          "line": 124,
+          "text": "                {",
+          "is_match": false
+        },
+        {
+          "line": 125,
+          "text": "                    role: 'system',",
+          "is_match": false
+        },
+        {
+          "line": 126,
+          "text": "                    content: `You are an expert at creating DALL-E image prompts. Based on the conversation context provided, create a single, visually stunning image prompt that captures the mood and theme of the discussion. The image should be VIVID, COLORFUL, and STRIKING - with rich, saturated colors and dramatic visual impact. Output ONLY the image prompt, nothing else. Make it artistic, bold, and memorable. Add \"vivid colors, dramatic lighting, high contrast, vibrant, cinematic, artistic, visually striking\" to ensure maximum visual impact.`",
+          "is_match": true
+        },
+        {
+          "line": 127,
+          "text": "                },",
+          "is_match": false
+        },
+        {
+          "line": 128,
+          "text": "                {",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 139,
+      "text": "        // Generate image with DALL-E",
+      "context": [
+        {
+          "line": 137,
+          "text": "        console.log('🎨 Generated image prompt:', imagePrompt);",
+          "is_match": false
+        },
+        {
+          "line": 138,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 139,
+          "text": "        // Generate image with DALL-E",
+          "is_match": true
+        },
+        {
+          "line": 140,
+          "text": "        const imageResponse = await openai.images.generate({",
+          "is_match": false
+        },
+        {
+          "line": 141,
+          "text": "            model: 'dall-e-3',",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "server.js",
+      "line": 141,
+      "text": "            model: 'dall-e-3',",
+      "context": [
+        {
+          "line": 139,
+          "text": "        // Generate image with DALL-E",
+          "is_match": false
+        },
+        {
+          "line": 140,
+          "text": "        const imageResponse = await openai.images.generate({",
+          "is_match": false
+        },
+        {
+          "line": 141,
+          "text": "            model: 'dall-e-3',",
+          "is_match": true
+        },
+        {
+          "line": 142,
+          "text": "            prompt: imagePrompt,",
+          "is_match": false
+        },
+        {
+          "line": 143,
+          "text": "            n: 1,",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 8,
+      "text": "- **Dynamic Backgrounds** — AI-generated images based on conversation context using DALL-E 3",
+      "context": [
+        {
+          "line": 6,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 7,
+          "text": "- **Real-time Chat** — Streaming responses from GPT-4o-mini",
+          "is_match": false
+        },
+        {
+          "line": 8,
+          "text": "- **Dynamic Backgrounds** — AI-generated images based on conversation context using DALL-E 3",
+          "is_match": true
+        },
+        {
+          "line": 9,
+          "text": "- **Modern UI** — Clean, dark theme inspired by ChatGPT",
+          "is_match": false
+        },
+        {
+          "line": 10,
+          "text": "- **Responsive Design** — Works on desktop and mobile",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 19,
+      "text": "- OpenAI API key with GPT-4 and DALL-E access",
+      "context": [
+        {
+          "line": 17,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 18,
+          "text": "- Node.js 18+",
+          "is_match": false
+        },
+        {
+          "line": 19,
+          "text": "- OpenAI API key with GPT-4 and DALL-E access",
+          "is_match": true
+        },
+        {
+          "line": 20,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 21,
+          "text": "### Installation",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 58,
+      "text": "├── server.js       # Express server (API proxy, DALL-E integration)",
+      "context": [
+        {
+          "line": 56,
+          "text": "├── styles.css      # Styling (CSS variables, responsive)",
+          "is_match": false
+        },
+        {
+          "line": 57,
+          "text": "├── script.js       # Frontend logic (chat, streaming, backgrounds)",
+          "is_match": false
+        },
+        {
+          "line": 58,
+          "text": "├── server.js       # Express server (API proxy, DALL-E integration)",
+          "is_match": true
+        },
+        {
+          "line": 59,
+          "text": "├── package.json    # Dependencies and scripts",
+          "is_match": false
+        },
+        {
+          "line": 60,
+          "text": "└── .gitignore      # Ignores .env, node_modules, etc.",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 68,
+      "text": "| `/api/generate-background` | POST | Generate background image with DALL-E 3 |",
+      "context": [
+        {
+          "line": 66,
+          "text": "|----------|--------|-------------|",
+          "is_match": false
+        },
+        {
+          "line": 67,
+          "text": "| `/api/chat` | POST | Stream chat completions from GPT-4o-mini |",
+          "is_match": false
+        },
+        {
+          "line": 68,
+          "text": "| `/api/generate-background` | POST | Generate background image with DALL-E 3 |",
+          "is_match": true
+        },
+        {
+          "line": 69,
+          "text": "| `/api/health` | GET | Health check and API key status |",
+          "is_match": false
+        },
+        {
+          "line": 70,
+          "text": "",
+          "is_match": false
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "line": 82,
+      "text": "- **AI**: OpenAI GPT-4o-mini, DALL-E 3",
+      "context": [
+        {
+          "line": 80,
+          "text": "- **Frontend**: Vanilla HTML, CSS, JavaScript",
+          "is_match": false
+        },
+        {
+          "line": 81,
+          "text": "- **Backend**: Node.js, Express",
+          "is_match": false
+        },
+        {
+          "line": 82,
+          "text": "- **AI**: OpenAI GPT-4o-mini, DALL-E 3",
+          "is_match": true
+        },
+        {
+          "line": 83,
+          "text": "",
+          "is_match": false
+        },
+        {
+          "line": 84,
+          "text": "## License",
+          "is_match": false
+        }
+      ]
+    }
+  ],
+  "api_calls_found": [],
+  "summary": {
+    "total_model_references": 16,
+    "total_api_calls": 0,
+    "unique_files_with_models": 2,
+    "unique_files_with_api_calls": 0,
+    "model_families_found": [
+      "GPT models"
+    ],
+    "projects_analyzed": 1
+  }
+}

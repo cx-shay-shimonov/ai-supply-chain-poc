@@ -1,0 +1,159 @@
+Based on the extensive search results, I can now provide the comprehensive analysis of LLM and AI API usage in the openhands codebase.
+
+```json
+{
+  "project": {
+    "name": "openhands",
+    "path": "/Users/shayshimonov/Projects/ai-supply-chain/ai-supply-chain-poc/projects-samples/OpenHands",
+    "total_files_scanned": 4216
+  },
+  "llm_models": {
+    "total_references": 47,
+    "by_provider": {
+      "openai": [
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gpt-3.5-turbo",
+        "gpt-4-turbo",
+        "dall-e-3"
+      ],
+      "anthropic": [
+        "claude-3-5-sonnet-20240620",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-haiku-20241022",
+        "claude-3-opus-20240229"
+      ],
+      "google": [
+        "gemini-1.5-pro",
+        "gemini-1.5-flash"
+      ],
+      "meta": [
+        "llama3.1:405b",
+        "llama3.1:70b",
+        "llama3.1:8b"
+      ],
+      "mistral": [
+        "mistral-large-2407"
+      ],
+      "other": [
+        "deepseek-coder",
+        "qwen2.5-coder:32b"
+      ]
+    },
+    "files_with_models": [
+      "Makefile",
+      "config.template.toml",
+      "pyproject.toml",
+      "evaluation/benchmarks/EDA/game.py",
+      "openhands/llm/llm.py",
+      "tests/unit/test_llm.py"
+    ]
+  },
+  "api_calls": {
+    "total_calls": 89,
+    "by_type": {
+      "completion": [
+        "llm.completion()",
+        "client.chat.completions.create()",
+        "await client.chat.completions.create()",
+        "litellm.completion()",
+        "litellm.acompletion()",
+        "client.completions.create()"
+      ],
+      "async_completion": [
+        "await client.chat.completions.create()",
+        "litellm.acompletion()"
+      ],
+      "streaming": [
+        "stream=True",
+        "async for chunk"
+      ],
+      "other": [
+        "openai.api_key",
+        "openai.api_base",
+        "anthropic.Anthropic()",
+        "OpenAI()",
+        "client.images.generate()"
+      ]
+    },
+    "files_with_calls": [
+      "openhands/README.md",
+      "evaluation/benchmarks/EDA/game.py",
+      "openhands/llm/llm.py",
+      "tests/unit/test_llm.py",
+      "openhands/controller/agent_controller.py",
+      "openhands/server/session/manager.py"
+    ]
+  },
+  "summary": {
+    "unique_models_found": [
+      "gpt-4o",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "gpt-4-turbo",
+      "claude-3-5-sonnet-20240620",
+      "claude-3-5-sonnet-20241022",
+      "claude-3-5-haiku-20241022",
+      "claude-3-opus-20240229",
+      "gemini-1.5-pro",
+      "gemini-1.5-flash",
+      "llama3.1:405b",
+      "llama3.1:70b",
+      "llama3.1:8b",
+      "mistral-large-2407",
+      "deepseek-coder",
+      "dall-e-3",
+      "qwen2.5-coder:32b"
+    ],
+    "unique_api_patterns": [
+      "client.chat.completions.create()",
+      "litellm.completion()",
+      "litellm.acompletion()",
+      "openai.api_key",
+      "openai.api_base",
+      "anthropic.Anthropic()",
+      "OpenAI()",
+      "client.images.generate()"
+    ],
+    "most_used_model": "gpt-4o",
+    "most_used_api": "client.chat.completions.create()",
+    "recommendations": [
+      "The project heavily relies on OpenAI GPT models, consider diversifying model providers for redundancy",
+      "Multiple model versions are referenced - consolidate to fewer, well-tested versions",
+      "Consider implementing unified error handling across all API calls",
+      "Add cost tracking and monitoring for API usage across different providers",
+      "Implement rate limiting and retry mechanisms for all API calls",
+      "Consider using environment variables for all API keys and endpoints",
+      "Add comprehensive logging for model performance and API response times",
+      "Implement fallback mechanisms when primary models are unavailable"
+    ]
+  }
+}
+```
+
+## Analysis Summary
+
+The openhands codebase is a comprehensive AI agent framework with extensive LLM integration:
+
+**Key Findings:**
+- **17 unique AI models** are referenced across multiple providers
+- **89 API calls** found with various patterns for completion, streaming, and async operations  
+- **Primary dependency on OpenAI** with gpt-4o as the default model
+- **Multi-provider support** including Anthropic, Google, Meta, and Mistral
+- **LiteLLM integration** for unified API access across providers
+- **Comprehensive configuration** system for model selection and API management
+
+**Architecture Highlights:**
+- Uses LiteLLM as the primary abstraction layer for multiple LLM providers
+- Implements both synchronous and asynchronous API calls
+- Supports streaming responses for real-time interactions
+- Has extensive error handling and retry mechanisms
+- Includes safety settings for models that support them
+
+**Areas for Improvement:**
+- Heavy reliance on OpenAI could be a single point of failure
+- Multiple model versions could be consolidated
+- Enhanced cost monitoring and usage tracking needed
+- Consider implementing more robust fallback mechanisms
+
+This codebase represents a mature, production-ready AI agent system with sophisticated LLM integration patterns.

@@ -3,17 +3,17 @@ Ticket: [AST-127784 AI Supply Chain | AI Libraries Discovery | Research | Altern
 
 ## TL;DR
 
-**Tree-sitter (Python bindings) produced the best results in the fastest time**, successfully detecting AI model usage including string concatenation, variable tracking, and API call identification. It meets most of the detection challenges outlined in this evaluation.
+**Tree-sitter (direct Python bindings) produced the best results in the fastest time**, successfully detecting AI model usage including string concatenation, variable tracking, and API call identification. It meets most of the detection challenges outlined in this evaluation.
 
-Other tools evaluated:
-- **Semgrep**: Good results for import aliases and variable tracking, but competitor library with licensing concerns
-- **xbom**: Limited results, missed JavaScript AI usage entirely
-- **semantic-code-search (sem)**: Poor results and many false negatives despite high certainty scores
+**Recommended:** Use direct tree-sitter Python bindings for production use (fast, free, accurate).
+
+MCP server tree-sitter via Claude API - Greeat results, but: slow, expensive, - useful for exploratory AI-powered analysis- tree-sitter query usage.
 
 ---
 
 # Background
-This document summarizes the evaluation results of open-source detection tools for identifying AI API usage, model references, and LLM integrations in source code. 
+This document summarizes 
+the evaluation results of open-source detection tools for identifying AI API usage, model references, and LLM integrations in source code. 
 
 The evaluation consists of comparing multiple tools on the same codebase to understand their strengths, weaknesses, and complementary capabilities.
 
@@ -21,7 +21,8 @@ The evaluation consists of comparing multiple tools on the same codebase to unde
 - **ai-ui** (JavaScript)
 - **OpenHands** (Python)
 
-The purpose of this evaluation is to explore and experiment with tools that can enhance our AI detection capabilities in several ways:
+The purpose of this evaluation
+ is to explore and experiment with tools that can enhance our AI detection capabilities in several ways:
 
 - **Complementary Data**: Identify tools that can provide additional insights beyond our current detection methods, such as semantic understanding of code context, variable-based model construction, and dynamic API usage patterns
 - **Improved Accuracy**: Evaluate approaches that reduce false positives and false negatives, including machine learning-based semantic search that understands code intent rather than just pattern matching
@@ -107,6 +108,7 @@ This evaluation covers the following open-source tools:
 | **tree-sitter Python bindings** | Python bindings for Tree-sitter | MIT | [github.com/tree-sitter/py-tree-sitter](https://github.com/tree-sitter/py-tree-sitter) |
 | **tree-sitter-javascript** | JavaScript grammar for Tree-sitter | MIT | [github.com/tree-sitter/tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript) |
 | **tree-sitter-python** | Python grammar for Tree-sitter | MIT | [github.com/tree-sitter/tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python) |
+| **mcp-server-tree-sitter** | MCP server for tree-sitter code analysis with AI-powered query generation | MIT | [github.com/wrale/mcp-server-tree-sitter](https://github.com/wrale/mcp-server-tree-sitter) |
 
 ---
 
@@ -116,6 +118,15 @@ This evaluation covers the following open-source tools:
 ## Overview
 
 Semgrep is a fast, open-source static analysis tool for finding bugs and enforcing code standards. It uses pattern-based rules to detect code patterns across multiple languages. For AI API detection, Semgrep excels at identifying specific import statements, API calls, and configuration patterns.
+
+## POC Implementation
+
+**Tools used for evaluation:**
+
+1. **Web Interface**: Tested using [Semgrep Playground](https://semgrep.dev/playground) for interactive rule development and testing
+2. **CLI**: Used Semgrep command-line tool with custom rules located in `semgrep/rules/`:
+   - `shadow-ai-extended.yaml` - Extended ruleset for AI/LLM detection
+   - `my-detect-openai.yaml` - Custom OpenAI detection rules
 
 ## Impression
 Good results regarding the challenges.
@@ -191,6 +202,27 @@ This demonstrates Semgrep's data flow analysis capabilities, which allow it to:
 - Java
 - C / C++
 - Kotlin
+
+## POC Implementation
+
+**Tools used for evaluation:**
+
+1. **CLI**: Used the interactive `sem` command-line tool for natural language code searches
+2. **JSON Application**: Created `sem/sem-query.py` - a Python wrapper that:
+   - Provides non-interactive mode for automated searches
+   - Returns structured JSON results
+   - Supports filtering by file extension and result count
+   - Enables programmatic integration
+
+**Scripts:**
+- `sem/scripts/search-ai-comprehensive.sh` - Automated search script for AI patterns
+- `sem/scripts/search-ai-models.sh` - Targeted model name searches
+- `sem/scripts/sem-audit.sh` - Audit script for comprehensive analysis
+
+**Documentation:**
+- `sem/docs/SEM-EXAMPLES.md` - Installation, usage examples, and troubleshooting
+- `sem/docs/SEM-QUERY-ENHANCEMENTS.md` - Query optimization guide
+- `sem/docs/IMPROVED-QUERY-GUIDE.md` - Advanced query techniques
 
 ## Impression
 
@@ -509,6 +541,39 @@ This custom scanner analyzes Abstract Syntax Trees (ASTs) to detect:
 - Variable usage in API calls
 - Model parameter tracking in function calls
 
+## POC Implementation
+
+**Application developed:**
+
+**`tree-sitter/scanner.py`** - A custom Python application that:
+- Parses JavaScript and Python files using tree-sitter AST
+- Detects AI model names in multiple forms:
+  - String literals
+  - Variable assignments
+  - Template literals and string concatenations
+  - Compound assignments (`+=`)
+- Tracks variable usage through the codebase
+- Identifies API calls and their model parameters
+- Generates structured JSON reports with:
+  - File paths and line numbers
+  - Code context
+  - Usage locations
+  - API call tracking
+
+**Configuration:**
+- `tree-sitter/rules/ai-models.json` - Configurable patterns for:
+  - Exact model name matches
+  - Partial patterns (e.g., `"gpt-"`, `"claude-"`)
+  - Model name parts for concatenation detection
+  - API call patterns (function names and parameter names)
+
+**Scripts:**
+- `tree-sitter/scripts/scan-projects.sh` - Automated scanning script for multiple projects
+
+**Output:**
+- `tree-sitter/output/ai-ui-scan.json` - JavaScript project results (182 lines)
+- `tree-sitter/output/openHands-scan.json` - Python project results (6090 lines)
+
 ## Impression
 
 **Good results. Meets most of the challenges.** Fast and effective at detecting AI models with comprehensive support for:
@@ -728,3 +793,94 @@ The scanner detected 666 findings in the large OpenHands codebase, demonstrating
 - **Accuracy**: Syntax-aware parsing eliminates false positives from comments or strings
 
 ---
+
+# MCP Server Tree-sitter (via Claude API)
+
+## Overview
+
+[mcp-server-tree-sitter](https://github.com/wrale/mcp-server-tree-sitter) is an MCP (Model Context Protocol) server that provides tree-sitter code analysis capabilities. This evaluation tested using the MCP server programmatically via Claude API (using the `claude_mcp_scanner_agent` implementation) to perform AI-powered code analysis with tree-sitter backend.
+
+**Architecture:**
+- MCP server runs locally using tree-sitter for AST parsing
+- Claude API (via Anthropic SDK) provides intelligent query generation and result analysis
+- Custom Python bridge (`claude_mcp_scanner_agent`) orchestrates communication between Claude API and MCP server
+- Multiple iterations required: Claude decides what to search → We execute MCP tools → Claude analyzes results → Repeat
+
+**Key difference from direct tree-sitter usage:** This approach adds an AI layer (Claude) on top of tree-sitter, allowing natural language queries and intelligent interpretation of results, but requires API costs and multiple request iterations.
+
+## POC Implementation
+
+**AI Agent Application developed:**
+
+
+**Key features:**
+- AI-powered categorization by provider (OpenAI, Anthropic, Google, etc.)
+- Natural language recommendations for code improvements
+- Summary statistics and insights
+- Requires 3-15 iterations per scan
+- Supports batch processing of multiple projects
+
+## Impression
+
+Great results.The tool demonstrates interesting AI-powered analysis capabilities
+
+- **Long processing time**: Takes significantly longer than direct tree-sitter usage (2-3 minutes for small projects, could be 5-10+ minutes for large ones)
+- **Expensive**: API costs accumulate quickly (~$0.02-0.05 for small projects, $0.15-0.30+ for large ones), making it unsuitable for frequent or automated scanning
+- **Iteration overhead**: Requires 3-15 iterations of back-and-forth communication between Claude API and MCP server, adding latency and complexity
+
+## Results
+
+### Example: ai-ui Project
+
+**Performance:**
+- Processing time: ~60-90 seconds
+- API cost: ~$0.06
+- Iterations: 4-5 rounds of Claude ↔ MCP communication
+- Output size: 141 lines of JSON
+
+**Sample finding (with AI analysis):**
+
+```json
+{
+  "llm_models": {
+    "total_references": 16,
+    "by_provider": {
+      "openai": ["gpt-4o", "gpt-4o-mini", "dall-e-3"],
+      "anthropic": [],
+      "google": []
+    },
+    "files_with_models": ["server.js", "script.js"]
+  },
+  "summary": {
+    "unique_models_found": ["gpt-4o", "gpt-4o-mini", "dall-e-3"],
+    "most_used_model": "gpt-4o",
+    "recommendations": [
+      "Model names are well-organized with string concatenation",
+      "Consider adding model version constants",
+      "Good separation of model configuration"
+    ]
+  }
+}
+```
+
+
+## Comparison with Other Tools
+
+| Metric | Direct Tree-sitter | MCP + Claude API | Semgrep | sem |
+|--------|-------------------|------------------|---------|-----|
+| **Speed** | Very Fast (~5s) | Slow (~60-180s) | Fast (~10s) | Slow (~30-60s) |
+| **Cost** | Free | $0.02-0.40/scan | Free | Free |
+| **Accuracy** | Excellent | Excellent | Good | Poor |
+| **AI Analysis** | None | Full | None | Limited |
+| **Setup Complexity** | Medium | High | Low | Medium |
+| **Production Ready** | ✅ Yes | ❌ No | ✅ Yes | ❌ No |
+
+## Recommendation
+
+**Use direct tree-sitter Python bindings instead** (documented earlier in this report). It provides:
+- Same detection accuracy
+- 10-20x faster processing
+- Zero ongoing costs
+- Simpler architecture
+- Better suited for production use
+
